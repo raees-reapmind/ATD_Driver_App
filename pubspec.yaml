@@ -1,0 +1,75 @@
+name: atd
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+
+  animated_splash_screen: 1.3.0
+  google_fonts: ^5.0.1
+  provider: 6.0.4
+  image_picker: 0.8.6
+  url_launcher: ^6.1.14
+  hive: 2.2.3
+  hive_flutter: 1.1.0
+  intl: 0.17.0
+  geolocator: 9.0.2
+  flutter_background_service: 2.4.5
+  flutter_local_notifications: 12.0.3
+  flutter_background_service_android: 3.0.3
+  device_info_plus: 8.0.0
+  flutter_signature_pad: 3.0.1
+  qr_code_scanner: 1.0.1
+
+  slidable_button: 2.0.0+1
+  flutter_swipe_button: 2.1.1+1
+
+  data_connection_checker_tv: 0.3.5-nullsafety
+  equatable: 2.0.5
+  dio: 4.0.6
+  dartz: 0.10.1
+  go_router: ^12.1.1
+  fluttertoast: ^8.2.5
+  get: ^4.6.6
+  shared_preferences: ^2.2.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  hive_generator: 2.0.0
+  build_runner: ^2.3.2
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - lib/utils/images/logo.png
+    - lib/utils/images/atd_logo_white.png
+    - lib/utils/images/atd_logo_dark.png
+    - lib/utils/images/icons/dispenser_checks.png
+    - lib/utils/images/icons/orders.png
+    - lib/utils/images/icons/stock_transfer.png
+    - lib/utils/images/icons/vehicle_checks.png
+    - lib/utils/images/icons/lubricant.png
+    - lib/utils/images/icons/jerry_can.png
+    - lib/utils/images/icons/user_icon.png
+    - lib/utils/images/icons/sign_icon.png
+
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
