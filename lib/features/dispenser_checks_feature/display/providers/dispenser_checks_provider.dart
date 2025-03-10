@@ -37,6 +37,12 @@ class DispenserChecksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearDispenserChecksList() {
+    dispenserChecksList = [];
+    notifyListeners(); // ✅ Ensure UI updates
+  }
+
+
   void eitherFailureOrGetDispenserChecks({required String apiToken}) async {
     DispenserCheckRepositoryImpl repository = DispenserCheckRepositoryImpl(
       remoteDataSource: DispenserCheckRemoteDataSourceImpl(dio: Dio()),

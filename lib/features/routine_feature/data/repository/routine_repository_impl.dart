@@ -106,6 +106,45 @@ class RoutineRepositoryImpl implements RoutineRepository {
   }
 
   @override
+  Future<Either<Failure, String?>>? postTransferReport(
+      {required Routine routine, required String apiToken}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        final result = await remoteDataSource.postTransferReport(
+          apiToken: apiToken,
+          routine: routine,
+        );
+        return Right(result);
+      } on ServerException catch (error) {
+        return Left(ServerFailure(errorMessage: error.message.toString()));
+      }
+    } else {
+      return Left(
+          NetworkConnectionFailure(errorMessage: "No internet connection"));
+    }
+  }
+
+
+   @override
+  Future<Either<Failure, String?>>? postTransferFromReport(
+      {required Routine routine, required String apiToken}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        final result = await remoteDataSource.postTransferFromReport(
+          apiToken: apiToken,
+          routine: routine,
+        );
+        return Right(result);
+      } on ServerException catch (error) {
+        return Left(ServerFailure(errorMessage: error.message.toString()));
+      }
+    } else {
+      return Left(
+          NetworkConnectionFailure(errorMessage: "No internet connection"));
+    }
+  }
+
+  @override
   Future<Either<Failure, String?>>? postEndRoutine(
       {required Routine routine, required String apiToken}) async {
     if (await networkInfo.isConnected!) {
@@ -174,4 +213,24 @@ class RoutineRepositoryImpl implements RoutineRepository {
           NetworkConnectionFailure(errorMessage: 'No internet connection'));
     }
   }
+
+     @override
+  Future<Either<Failure, String?>>? updateReacheadAt(
+      {required Routine routine, required String apiToken}) async {
+    if (await networkInfo.isConnected!) {
+      try {
+        final result = await remoteDataSource.updateReacheadAt(
+          apiToken: apiToken,
+          routine: routine,
+        );
+        return Right(result);
+      } on ServerException catch (error) {
+        return Left(ServerFailure(errorMessage: error.message.toString()));
+      }
+    } else {
+      return Left(
+          NetworkConnectionFailure(errorMessage: "No internet connection"));
+    }
+  }
+
 }

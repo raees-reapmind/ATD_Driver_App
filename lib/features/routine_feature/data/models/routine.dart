@@ -85,6 +85,18 @@ class Routine {
   bool? paymentCollected;
   @HiveField(38)
   bool? otp;
+   @HiveField(39)
+  String? managerSignImage;
+   @HiveField(40)
+  String? selectedDu;
+   @HiveField(41)
+  int? vehilcleId;
+   @HiveField(41)
+  String? vehicleNo;
+   @HiveField(41)
+  String? action;
+   @HiveField(42)
+  double? end_odometer;
 
 
   Routine({
@@ -112,6 +124,13 @@ class Routine {
     this.recieverName,
     this.paymentCollected,
     this.otp,
+    this.managerSignImage,
+    this.vehilcleId,
+    this.vehicleNo,
+    this.action,
+    this.end_odometer
+
+
   });
 
   @override
@@ -140,12 +159,16 @@ class Routine {
         paymentMode: value['payment_mode'],
         date: value['order_date'],
         pricePerLitre: value['product_rate'],
+        vehilcleId: value['vehicle_id'],
+        vehicleNo: value['vehicle_no'],
+        action: value['action'],
         price: value['total_bill'] != null
             ? double.parse(value['total_bill'].toString())
             : null,
         assetList: List<Map<String, dynamic>>.from(value['assets'] ?? [])
             .map((e) => Asset.fromMap(e))
             .toList());
+            
   }
 
   Map<String, dynamic> toStartTripMap() {
@@ -161,7 +184,7 @@ class Routine {
       'latitude': endLatitude,
       'longitude': endLongitude,
       'end_date_time': endDateTime != null
-          ? DateFormat('yyyy-MM-dd hh:mm:ss').format(endDateTime!)
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(endDateTime!)
           : '',
       'image': imageList.map((e) => e.imageId).toList(),
     };
@@ -175,16 +198,56 @@ class Routine {
       'latitude': endLatitude,
       'longitude': endLongitude,
       'arrived_date_time': arrivedDatetime != null
-          ? DateFormat('yyyy-MM-dd hh:mm:ss').format(arrivedDatetime!)
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(arrivedDatetime!)
           : '',
       'end_date_time': endDateTime != null
-          ? DateFormat('yyyy-MM-dd hh:mm:ss').format(endDateTime!)
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(endDateTime!)
           : '',
       'service_time': serviceTime,
+      'manager_sign_image': managerSignImage
     };
   }
 
   Map<String, dynamic> toDeliveryMap() {
+    return {
+      'routine_id': id,
+      'odometer': odometerReading,
+      'end_odometer': end_odometer,
+      'start_du_left': startTotalizerDuLeft,
+      'start_du_right': startTotalizerDuRight,
+      'end_du_left': endTotalizerDuLeft,
+      'end_du_right': endTotalizerDuRight,
+      'dispensed_list': assetsReport.map((e) => e.toMap()).toList(),
+      'latitude': endLatitude,
+      'longitude': endLongitude,
+      'arrived_date_time': arrivedDatetime != null
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(arrivedDatetime!)
+          : '',
+      'end_date_time': endDateTime != null
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(endDateTime!)
+          : '',
+      'service_time': serviceTime,
+      'receipt_image': imageList.map((e) => e.imageId).toList(),
+      'payment_collected': true,
+      'manager_sign_image': managerSignImage
+    };
+  }
+
+  Map<String, dynamic> toBillMap() {
+    return {
+      'routine_id': id,
+      'quantity': endQuantity,
+      'select_du': selectedDu
+    };
+  }
+  Map<String, dynamic> toUpdateReachedMap() {
+    return {
+      'id': id,
+    };
+  }
+
+
+  Map<String, dynamic> toTransferMap() {
     return {
       'routine_id': id,
       'odometer': odometerReading,
@@ -196,21 +259,15 @@ class Routine {
       'latitude': endLatitude,
       'longitude': endLongitude,
       'arrived_date_time': arrivedDatetime != null
-          ? DateFormat('yyyy-MM-dd hh:mm:ss').format(arrivedDatetime!)
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(arrivedDatetime!)
           : '',
       'end_date_time': endDateTime != null
-          ? DateFormat('yyyy-MM-dd hh:mm:ss').format(endDateTime!)
+          ? DateFormat('yyyy-MM-dd HH:mm:ss').format(endDateTime!)
           : '',
       'service_time': serviceTime,
       'receipt_image': imageList.map((e) => e.imageId).toList(),
       'payment_collected': true,
-    };
-  }
-
-  Map<String, dynamic> toBillMap() {
-    return {
-      'routine_id': id,
-      'quantity': endQuantity,
+      'manager_sign_image': managerSignImage
     };
   }
 }

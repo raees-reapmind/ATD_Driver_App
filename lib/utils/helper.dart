@@ -1,8 +1,18 @@
+import 'dart:async';
+
+import 'package:atd/features/location_feature/display/provider/location_provider.dart';
+import 'package:atd/features/login_feature/display/provider/login_provider.dart';
+import 'package:atd/features/routine_feature/display/providers/routines_provider.dart';
 import 'package:atd/utils/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
+
 const imagesPath = "lib/utils/images";
+  Timer? _locationTimer;
+
 
 void showSnackBar({required BuildContext context, required String message}) {
   ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -45,8 +55,62 @@ Future<void> clearSharedPref() async {
   }
 }
 
+void startLocationUpdates(LoginProvider loginProvider,RoutinesProvider routineProvider) {
+  
+  if (_locationTimer != null && _locationTimer!.isActive) {
+    print("[time-test] Location updates already running");
+    return;
+  }
+
+  _locationTimer = Timer.periodic(Duration(seconds: 45), (timer) {
+    print("[time-test] Calling API...");
+    LocationProvider locationProvider = LocationProvider();
+    locationProvider.sendLocationToServer(apiToken: loginProvider.userDetails!.apiToken!,routineProvider: routineProvider);
+  });
+
+  print("[time-test] Location updates started");
+}
+
+void stopLocationUpdates() {
+    print("[time-test] stopLocationUpdates called---");
+  if (_locationTimer != null) {
+    _locationTimer!.cancel();
+    _locationTimer = null;
+    print("[time-test] Location updates stopped");
+  }
+}
 
 
+String getCurrentTime() {
+  DateTime now = DateTime.now();
+  return DateFormat('HH:mm').format(now);
+}
 
 
+void clearTextFields(List<TextEditingController> controllers) {
+  for (var controller in controllers) {
+    controller.clear();
+  }
+}
 
+
+int generateYYYYMMDDHHMMSSUniqueId() {
+  return int.parse(DateTime.now().toLocal().toString()
+      .replaceAll(RegExp(r'[^0-9]'), '')
+      .substring(0, 14)); // Extracts YYYYMMDDHHMMSS
+}
+
+DateTime getCurrentTimeWithoutMilliseconds() {
+  final now = DateTime.now();
+  final formattedTime = DateFormat('HH.mm.ss').format(now);
+  final parsedTime = DateFormat('HH.mm.ss').parse(formattedTime);
+
+  return DateTime(
+    now.year,
+    now.month,
+    now.day,
+    parsedTime.hour,
+    parsedTime.minute,
+    parsedTime.second,
+  );
+}

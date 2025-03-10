@@ -25,6 +25,18 @@ class VehicleChecksProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+void clearVehicleChecks() {
+  if (vehicleCheckList != null) {
+    for (var check in vehicleCheckList!) {
+      check.status = 0; // ✅ Reset only status, keep data
+    }
+    notifyListeners(); // ✅ Ensure UI updates
+  }
+}
+
+
+
+
   void notifyDataChanged(){
     notifyListeners();
   }

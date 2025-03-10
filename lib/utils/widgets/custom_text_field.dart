@@ -7,6 +7,9 @@ class CustomTextField extends StatelessWidget {
   final bool isCaps;
   final bool isNumber;
   final int? maxLength;
+ final void Function(String)? onChange;
+
+
   const CustomTextField({
     Key? key,
     required this.controller,
@@ -14,12 +17,19 @@ class CustomTextField extends StatelessWidget {
     this.isNumber = false,
     this.isCaps = true,
     this.maxLength = 20,
+    this.onChange
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+       onChanged:onChange,
+      //   (value) {
+      //   if (onChange != null) {
+      //     onChange?.call(); // Properly calling the callback
+      //   }
+      // },
       textCapitalization:
           isCaps ? TextCapitalization.characters : TextCapitalization.none,
       keyboardType: isNumber ? TextInputType.number : null,

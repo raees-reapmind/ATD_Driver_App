@@ -3,40 +3,39 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:atd/core/services/image_picker_service.dart';
 import 'package:atd/features/image_upload_feature/display/providers/image_upload_provider.dart';
+import 'package:atd/features/routine_feature/data/models/asset.dart';
+import 'package:atd/features/routine_feature/data/models/routine.dart';
 import 'package:atd/features/vehicle_readings_feature/data/models/image_details.dart';
+import 'package:atd/utils/widgets/image_full_screen_view.dart';
 import 'package:atd/utils/widgets/provider_export.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../../../../../../utils/utils_export.dart';
-import '../../../../../utils/widgets/image_full_screen_view.dart';
-import '../../../data/models/asset.dart';
-import '../../../data/models/routine.dart';
 
-class CreateAssetReportScreen extends StatefulWidget {
+class TransferFromCreateAssetReportScreen extends StatefulWidget {
   final Routine routine;
   final int index;
 
-  const CreateAssetReportScreen(
+  const TransferFromCreateAssetReportScreen(
       {Key? key, required this.routine, required this.index})
       : super(key: key);
 
   @override
-  State<CreateAssetReportScreen> createState() =>
-      _CreateAssetReportScreenState();
+  State<TransferFromCreateAssetReportScreen> createState() =>
+      _TransferFromCreateAssetReportScreenState();
 }
 
-class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
+class _TransferFromCreateAssetReportScreenState extends State<TransferFromCreateAssetReportScreen> {
   final ImagePicker picker = ImagePicker();
   final quantityController = TextEditingController();
   final assetOdometerController = TextEditingController();
   XFile? image;
   List<ImageDetails> imageList = [];
   Asset? dropDownAsset;
-  String dropDownFrom = "SELECT";
-  List<String> dropdownOptions = ['SELECT', 'du left', 'du right']; // Define the options
 
+  String dropDownFrom = "SELECT";
   var duStatus = "Status";
   bool isButtonsDisabled = true;
   int retryCount = 0;
@@ -56,7 +55,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
   void initState() {
     if (widget.routine.assetList == null || widget.routine.assetList!.isEmpty) {
       widget.routine.assetList = [
-        Asset(id: null, name: 'Select', type: 'NA', qrCode: 'NA', quantity: 0),
+        Asset(id: null, name: 'Select', type: 'NA', qrCode: 'NA', quantity: 0)
       ];
     }
     dropDownAsset = null; // No initial selection to make the field optional
@@ -326,6 +325,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
     final dispenserChecksProvider = Provider.of<DispenserChecksProvider>(context);
 
+
     setState(() {
       quantity = routineProvider.routines[widget.index].quantity;
     });
@@ -351,141 +351,66 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                         children: [
                           const SizedBox(height: 10),
                           Center(
-                            child: Text("Asset Report",
+                            child: Text("Transfer Details",
                                 style: Theme.of(context).textTheme.titleMedium),
                           ),
                           const SizedBox(height: 20),
-                          Text(
-                            "Select Asset",
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                          DropdownButton<Asset>(
-                            isExpanded: true,
-                            value: dropDownAsset,
-                            hint: const Text("SELECT"),
-                            items: widget.routine.assetList
-                                ?.map<DropdownMenuItem<Asset>>((Asset value) {
-                              return DropdownMenuItem<Asset>(
-                                value: value,
-                                child: Text(value.name),
-                              );
-                            }).toList(),
-                            onChanged: (Asset? asset) {
-                              debugPrint('SELECTED ASSET : ${asset.toString()}');
-                              setState(() {
-                                dropDownAsset = asset;
-                               
-                              });
-                            },
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(2),
-                            child: Center(
-                              child: Text(
-                                'OR',
-                                style: Theme.of(context).textTheme.subtitle2,
-                              ),
-                            ),
-                          ),
-                          ListTile(
-                            contentPadding: const EdgeInsets.all(0),
-                            title: Text(
-                              "Scan QR",
-                              style: Theme.of(context).textTheme.subtitle1,
-                            ),
-                            trailing: IconButton(
-                                onPressed: () {},
-                                icon: const Icon(Icons.qr_code_2_rounded)),
-                          ),
-                          const Divider(),
-                          const SizedBox(height: 10),
-                          const SizedBox(height: 20),
-                          Text(
-                            "Select DU",
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                          DropdownButton<String>(
-                            alignment: AlignmentDirectional.centerEnd,
-                            value: dropDownFrom,
-                            elevation: 16,
-                            isExpanded: true,
-                            onChanged: (String? value) {
-                              if (value != null) {
-                                setState(() {
-                                  dropDownFrom = value;
-                                  // dropDownAsset?.subjectType = value;
-                                });
-                              }
-                            },
-                            // items: ['SELECT', 'Left', 'Right']
-                            //     .map<DropdownMenuItem<String>>((String value) {
-                            //   return DropdownMenuItem<String>(
-                            //     value: value,
-                            //     child: Text(value),
-                            //   );
-                             items: dropdownOptions.map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                            }).toList(),
-                          ),
-                          // const SizedBox(height: 10),
-                          // CustomButton(
-                          //   onTap: () {
-                          //     print('Dropdown value is $dropDownFrom');
-                          //     if (dropDownFrom == 'Left') {
-                          //       _startDataPulling(1);
-                          //     } else if (dropDownFrom == 'Right') {
-                          //       _startDataPulling(2);
-                          //     }
-                          //     setState(() {
-                          //       isButtonsDisabled = false;
-                          //       print('Start Dispensing 1: $isButtonsDisabled');
-                          //     });
-                          //   },
-                          //   title: "Start Dispensing",
-                          // ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // TextField(
-                          //   decoration: InputDecoration(
-                          //       labelText: duStatus,
-                          //       border: OutlineInputBorder()),
-                          // ),
-                          // const SizedBox(
-                          //   height: 10,
-                          // ),
+                         
                           Row(
                             children: [
                               Expanded(
                                 flex: 3,
                                 child: Text(
-                                  "Quantity",
+                                  "Actual Quantity",
                                   style: Theme.of(context).textTheme.subtitle1,
                                 ),
                               ),
                               Expanded(
                                 flex: 3,
                                 child: 
-                              
-                                  CustomTextField(
-                                    controller: quantityController,
-                                    hintText: 'Quantity',
-                                    isNumber: true,
-                                  ),
+                               
+                                TextField(
+  controller: quantityController,
+  onChanged: (value) {
+    if (dropDownAsset == null) {
+      debugPrint("[test] Creating a new asset instance");
+      dropDownAsset = Asset(
+        id: null,
+        name: "", // Default name
+        type: "NA",
+        qrCode: "NA",
+        quantity: double.tryParse(value),
+      );
+    } else {
+      dropDownAsset = dropDownAsset!.copyWith(
+        quantity: double.tryParse(value),
+      );
+    }
+    debugPrint('[from-test] dropDownAsset.quantity: ${dropDownAsset?.quantity}');
+  },
+  keyboardType: TextInputType.number,
+  decoration: const InputDecoration(
+    counterText: "",
+    filled: true,
+    fillColor: white300,
+    hintText: "Quantity",
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide: BorderSide(
+        color: Colors.black12, style: BorderStyle.solid, width: 2),
+    ),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(20)),
+      borderSide: BorderSide(style: BorderStyle.none, width: 0),
+    ),
+  ),
+)
+
+
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          dropDownAsset != null && dropDownAsset!.type == 'vehicle'
-                              ? CustomTextField(
-                                  controller: assetOdometerController,
-                                  hintText: 'Enter Asset Odometer',
-                                  isNumber: true,
-                                )
-                              : const SizedBox.shrink(),
+                         
                           const SizedBox(height: 10),
                           ListTile(
                             contentPadding: const EdgeInsets.all(0),
@@ -497,12 +422,14 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                                 "Kindly upload the images of DU receipt"),
                             trailing: IconButton(
                                 onPressed: () async {
+
                                   ImagePickerService.pickImage().then((image) {
                                     if (image != null) {
                                       setState(() {
                                         imageList.add(ImageDetails(
                                             image: image,
                                             imagePath: image.path));
+                                        //  quantityController.text = dropDownAsset.quantity.toString();
                                       });
                                     }
                                   });
@@ -533,7 +460,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                                           borderRadius:
                                               BorderRadius.circular(15),
                                           child: Hero(
-                                            tag: 'asset$index',
+                                            tag: 'asset $index',
                                             child: Image.file(
                                               File(imageList[index].imagePath!),
                                               width: 50,
@@ -585,13 +512,15 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
     required int index,
     String? selctedDu
   }) async {
-    asset?.quantity = quantity;
-    asset?.subjectType = selctedDu!;
+    debugPrint('[api-test] saveClickEvent asset ${asset}');
+    asset = asset?.copyWith(name: selctedDu, quantity: quantity);
+
+    // asset?.quantity = quantity;
+    // asset?.name = selctedDu!;
     debugPrint('[api-test] saveClickEvent asset!.quantity ${asset?.quantity}');
     debugPrint('[api-test] saveClickEvent asset!.name ${asset?.name}');
-    // If asset selection is optional, allow proceeding without an asset
-    await routineProvider
-        .createAssetDelivery(
+
+     await routineProvider.createAssetDelivery(
       loginProvider: loginProvider,
       asset: asset, // Pass nullable asset
       imageUploadProvider: imageUploadProvider,

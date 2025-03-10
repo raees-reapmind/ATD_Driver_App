@@ -16,6 +16,7 @@ class VehicleChecksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final vehicleChecksProvider = Provider.of<VehicleChecksProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
+    
     return Scaffold(
       appBar: AppBar(actions: [
         const Center(child: Text('Logout')),
@@ -160,6 +161,7 @@ class VehicleChecksScreen extends StatelessWidget {
 
   void saveClickEvent(VehicleChecksProvider vehicleChecksProvider,
       LoginProvider loginProvider, BuildContext context) async {
+
     bool isChecked = true;
     for (VehicleCheck vehicleCheck
         in vehicleChecksProvider.vehicleCheckList ?? []) {
@@ -177,6 +179,7 @@ class VehicleChecksScreen extends StatelessWidget {
         if (isSuccess) {
           loginProvider.changeSessionStage(
               sessionStage: SessionStage.dispenserChecks);
+          // vehicleChecksProvider.clearVehicleChecks();
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const DispenserChecksScreen(),
           ));

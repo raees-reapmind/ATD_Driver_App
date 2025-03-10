@@ -1,30 +1,32 @@
 import 'package:atd/features/routine_feature/data/models/additonal_charge.dart';
 import 'package:atd/features/routine_feature/display/pages/delivery/delivery_invoice_screen.dart';
+import 'package:atd/features/routine_feature/display/pages/delivery/transfer_invoice_screen.dart';
 import 'package:atd/utils/widgets/custom_alert_dialog.dart';
 import 'package:atd/utils/widgets/provider_export.dart';
 import 'package:provider/provider.dart';
 import 'create_asset_report_screen.dart';
+import 'transfer_to_create_asset_report_screen.dart';
+
 import 'package:atd/features/routine_feature/display/widgets/title_content.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/utils_export.dart';
 
-class DeliveryScreen extends StatefulWidget {
+class TransferScreen extends StatefulWidget {
   final int index;
 
-  const DeliveryScreen({Key? key, required this.index}) : super(key: key);
+  const TransferScreen({Key? key, required this.index}) : super(key: key);
 
   @override
-  State<DeliveryScreen> createState() => _DeliveryScreenState();
+  State<TransferScreen> createState() => _TransferScreenState();
 }
 
-class _DeliveryScreenState extends State<DeliveryScreen> {
+class _TransferScreenState extends State<TransferScreen> {
+
   final totalizerDuLeftController = TextEditingController();
   final totalizerDuRightController = TextEditingController();
-  final  odometerController = TextEditingController();
 
-
-  @override
+  @override 
   Widget build(BuildContext context) {
     final routineProvider = Provider.of<RoutinesProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
@@ -52,46 +54,49 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                             const SizedBox(height: 10),
                             Center(
                               child: Text(
-                                "Order Details",
+                                "Transfer Details",
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
                             const SizedBox(height: 20),
                             TitleContent(
-                              title: "Name",
-                              content: routineProvider
-                                  .routines[widget.index].name
-                                  .toString(),
+                              title: "To",
+                              content: routineProvider.routines[widget.index].action.toString() ?? '',
                             ),
                             TitleContent(
-                              title: "POC",
-                              content: routineProvider
-                                  .routines[widget.index].pocName
-                                  .toString(),
-                            ),
-                            TitleContent(
-                              title: "Contact No",
-                              content: routineProvider
-                                  .routines[widget.index].pocMobile
-                                  .toString(),
-                            ),
-                            TitleContent(
-                              title: "Total Price",
-                              content:
-                                  "₹ ${routineProvider.routines[widget.index].price}",
+                              title: "ID",
+                              content: routineProvider.routines[widget.index].vehicleNo ?? '',
                             ),
                             TitleContent(
                               title: "Quantity",
-                              content:
-                                  "${routineProvider.routines[widget.index].quantity} L",
-                              isBold: true,
+                              content: '${routineProvider.routines[widget.index].quantity.toString()} L',
                             ),
                             TitleContent(
-                              title: "Price Per Litre",
-                              content:
-                                  "₹ ${routineProvider.routines[widget.index].pricePerLitre}",
-                              isBold: true,
+                              title: "Supervisor",
+                              content:"${routineProvider.routines[widget.index].price ?? '-'}",
                             ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Expanded(
+                                child: Text(
+                                  'Location',
+                                ),
+                              ),
+                              const SizedBox(height: 10,),
+                              Expanded(
+                                child: Text(
+                                  textAlign: TextAlign.end,
+                                  "${routineProvider.routines[widget.index].address} L",
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style:const TextStyle(fontWeight: FontWeight.bold)
+                                ),
+                              )
+                              ]
+                            ),
+                           
                           ],
                         ),
                       ),
@@ -123,7 +128,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     const Text("Total"),
-                                    routineProvider.routines[widget.index].endQuantity != routineProvider.routines[widget.index].quantity
+                                    routineProvider.routines[widget.index]
+                                                .endQuantity !=
+                                            routineProvider
+                                                .routines[widget.index].quantity
                                         ? Text(
                                             "${routineProvider.routines[widget.index].endQuantity} / ${routineProvider.routines[widget.index].quantity} L",
                                             style: const TextStyle(
@@ -162,7 +170,8 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                                     content: routineProvider
                                                         .routines[widget.index]
                                                         .assetsReport[index]
-                                                        .name,
+                                                        // .name,
+                                                        .subjectType ?? '',
                                                   ),
                                                   TitleContent(
                                                     title: 'Type',
@@ -202,13 +211,13 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                     onPressed: () => Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: ((context) =>
-                                              CreateAssetReportScreen(
+                                              TransferCreateAssetReportScreen(
                                                 routine: routineProvider
-                                                    .routines[widget.index],
+                                                    .routines[widget.index],  
                                                 index: widget.index,
-                                              ))),
+                                              ) )),
                                     ),
-                                  child: const Icon(Icons.add,color: Colors.white  ),
+                                    child: const Icon(Icons.add,color: Colors.white,),
                                   )
                                 ],
                               )
@@ -233,46 +242,18 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
       context: context,
       builder: (context) => CustomAlertDialog(
         isTotalizer: true,
-        isOdometer: true,
-        odometerController: odometerController,
         totalizerDuLeftController: totalizerDuLeftController,
         totalizerDuRightController: totalizerDuRightController,
-
         onTapSave: () async {
-          final odometerReading = double.tryParse(odometerController.text.toString());
           final totalizerDuLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
-          final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
-
+          final totalizerDuRightReading =  double.tryParse(totalizerDuRightController.text.toString());
           if (totalizerDuLeftReading != null && totalizerDuRightReading != null) {
-
-            routineProvider.routines[index].end_odometer = odometerReading;
             routineProvider.routines[index].endTotalizerDuLeft = totalizerDuLeftReading;
             routineProvider.routines[index].endTotalizerDuRight = totalizerDuRightReading;
             routineProvider.notifyDataChange();
-
-            debugPrint('routineProvider.routines[index].quantity: ${routineProvider.routines[index].quantity}');
-            debugPrint('routineProvider.routines[index].endQuantity: ${routineProvider.routines[index].endQuantity}');
-            debugPrint('routineProvider.routines[index].quantity != routineProvider.routines[index].endQuantity: ${routineProvider.routines[index].quantity != routineProvider.routines[index].endQuantity}');
             
-            // if (routineProvider.routines[index].quantity != routineProvider.routines[index].endQuantity) {
-
-              await calculateBill(routineProvider, context, loginProvider, index)
-                  .then((isSuccess) {
-                for (AdditionCharge additionCharge in routineProvider.routines[index].additionalChargesList ?? []) {
-                  if (additionCharge.breakUpType == 'total_payable_bill') {
-                    routineProvider.routines[index].endPrice = additionCharge.value;
-                    break;
-                  }
-                }
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: ((context) =>
-                        DeliveryInvoiceScreen(index: index))));
-              });
-            // } else {
-            //   routineProvider.routines[index].endPrice = routineProvider.routines[index].price;
-            //   Navigator.of(context).push(MaterialPageRoute(
-            //       builder: ((context) => DeliveryInvoiceScreen(index: index))));
-            // }
+            Navigator.of(context).push(MaterialPageRoute(builder: ((context) => TransferInvoiceScreen(index: index, transferTime: getCurrentTime()))));
+         
           }
         },
         onTapCancel: () => Navigator.of(context).pop(),
@@ -280,9 +261,9 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
     );
   }
 
-  Future<bool> calculateBill(RoutinesProvider routineProvider,
-      BuildContext context, LoginProvider loginProvider, int index) async {
-    return await routineProvider.eitherFailureOrGetBill(
-        apiToken: loginProvider.userDetails!.apiToken!, index: index);
-  }
+  // Future<bool> calculateBill(RoutinesProvider routineProvider,
+  //     BuildContext context, LoginProvider loginProvider, int index) async {
+  //   return await routineProvider.eitherFailureOrGetBill(
+  //       apiToken: loginProvider.userDetails!.apiToken!, index: index);
+  // }
 }

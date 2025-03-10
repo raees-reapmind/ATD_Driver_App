@@ -25,6 +25,9 @@ class Asset {
   int? receiptImage;
   @HiveField(10)
   List<ImageDetails> images = [];
+  
+  @HiveField(11)
+  String? subjectType;
 
   Asset({
     required this.id,
@@ -36,11 +39,12 @@ class Asset {
     this.odometer,
     this.receiptImage,
     this.capacity,
+    this.subjectType,
   });
 
   @override
   String toString() {
-    return 'Asset{id: $id, name: $name, qrCode: $qrCode, type: $type, quantity: $quantity, capacity: $capacity, endQuantity: $endQuantity, odometer: $odometer, images : $images}';
+    return 'Asset{id: $id, name: $name, qrCode: $qrCode, type: $type, quantity: $quantity, capacity: $capacity, endQuantity: $endQuantity, odometer: $odometer, images : $images, subjectType $subjectType}';
   }
 
   Map<String, dynamic> toMap() {
@@ -51,6 +55,7 @@ class Asset {
       'quantity': endQuantity,
       'odometer': odometer,
       'image': images.map((e) => e.imageId).toList(),
+      'subject_type': subjectType,
     };
   }
 
@@ -66,4 +71,31 @@ class Asset {
       capacity: double.parse(value['capacity'].toString()),
     );
   }
+
+Asset copyWith({
+  int? id,
+  String? name,
+  String? qrCode,
+  String? type,
+  double? quantity,
+  double? capacity,
+  double? endQuantity,
+  double? odometer,
+  int? receiptImage,
+  List<ImageDetails>? images,
+}) {
+  return Asset(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    qrCode: qrCode ?? this.qrCode,
+    type: type ?? this.type,
+    quantity: quantity ?? this.quantity, // Ensure quantity gets updated
+    capacity: capacity ?? this.capacity,
+    endQuantity: endQuantity ?? this.endQuantity,
+    odometer: odometer ?? this.odometer,
+    receiptImage: receiptImage ?? this.receiptImage,
+  )..images = images ?? this.images;
+}
+
+
 }

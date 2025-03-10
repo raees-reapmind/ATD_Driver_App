@@ -15,8 +15,7 @@ class ImageUploadRemoteDataSourceImpl implements ImageUploadRemoteDataSource {
   ImageUploadRemoteDataSourceImpl({required this.dio});
 
   @override
-  Future<int>? postImage(
-      {required String imagePath, required String apiToken}) async {
+  Future<int>? postImage({required String imagePath, required String apiToken}) async {
     dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     dio.options.headers['Accept'] = 'application/json';
@@ -25,11 +24,12 @@ class ImageUploadRemoteDataSourceImpl implements ImageUploadRemoteDataSource {
       'media': await MultipartFile.fromFile(imagePath),
     });
 
-    debugPrint('[api-test] postImage URL: $postImageUploadUrl');
-    debugPrint('[api-test] postImage Headers: ${dio.options.headers}');
-    debugPrint('[api-test] postImage  Request Data: ${imageForm.fields}');
-    debugPrint('[api-test] postImage  Request Data 1: ${imageForm.files}');
-    debugPrint('[api-test] postImage  Request Data 2: ${imageForm.boundary}');
+    // debugPrint('[api-test] postImage URL: $postImageUploadUrl');
+    // debugPrint('[api-test] postImage Headers: ${dio.options.headers}');
+    // debugPrint('[api-test] postImage Request Data: ${imageForm.fields}');
+    // debugPrint('[api-test] postImage Request Data 1: ${imageForm.files}');
+    // debugPrint('[api-test] postImage Request Data 2: ${imageForm.boundary}');
+    // debugPrint('[api-test] postImage Request Data 3: ${imageForm}');
 
     final response = await dio.post(
       postImageUploadUrl,
@@ -42,7 +42,7 @@ class ImageUploadRemoteDataSourceImpl implements ImageUploadRemoteDataSource {
     if (response.statusCode == 200) {
       final responseMap = Map<String, dynamic>.from(response.data);
       int id = int.parse(responseMap['result']['id']);
-      debugPrint('image id : $id');
+      debugPrint('[api-test] postImage image id : $id');
       return id;
     } else {
       throw ServerException();

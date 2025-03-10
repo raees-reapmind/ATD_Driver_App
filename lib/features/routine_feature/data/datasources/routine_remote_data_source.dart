@@ -28,6 +28,15 @@ abstract class RoutineRemoteDataSource {
   Future<List<AdditionCharge>>? getBill(
       {required String apiToken, required Routine routine});
   Future<List<DuResponseData>>? getDuStatusResponse();
+
+  Future<String>? postTransferReport(
+      {required Routine routine, required String apiToken});
+
+  Future<String>? postTransferFromReport(
+      {required Routine routine, required String apiToken});
+
+  Future<String>? updateReacheadAt(
+      {required Routine routine, required String apiToken});
 }
 
 class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
@@ -51,6 +60,7 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     dio.options.headers[HttpHeaders.contentTypeHeader] = ContentType.json;
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     dio.options.headers['Accept'] = ContentType.json;
+    
     final response = await dio.get(
       getRoutinesUrl,
       options: Options(validateStatus: (status) => true),
@@ -150,12 +160,98 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     dio.options.headers['Accept'] = 'application/json';
+
+    
+    print('[api-test] postDeliveryReport apiToken ${apiToken}');
+    print('[api-test] postDeliveryReport URL: $postDeliveryReportUrl');
+    print('[api-test] postDeliveryReport Headers: ${dio.options.headers}');
+    print('[api-test] postDeliveryReport request: ${routine.toDeliveryMap()}');
+
     final response = await dio.post(
       postDeliveryReportUrl,
       options: Options(
         validateStatus: (status) => true,
-      ),
+      ), 
       data: routine.toDeliveryMap(),
+    );
+
+    final responseMap = Map<String, dynamic>.from(response.data);
+
+    debugPrint(responseMap.toString());
+    debugPrint(response.statusCode.toString());
+
+    if (response.statusCode == 200) {
+      debugPrint(responseMap.toString());
+      return responseMap['message'];
+    } else {
+      throw ServerException(
+          message: '[${response.statusCode}] ${responseMap['message'].toString()}');
+    }
+  }
+
+  @override
+  Future<String>? postTransferReport(
+      {required Routine routine, required String apiToken}) async {
+    debugPrint(routine.toTransferMap().toString());
+    String date = routine.toTransferMap()['arrived_date_time'];
+    debugPrint(date);
+    dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
+    dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
+    dio.options.headers['Accept'] = 'application/json';
+
+    
+    print('[api-test] postTransferReport apiToken ${apiToken}');
+    print('[api-test] postTransferReport URL: $postTransferReportUrl');
+    print('[api-test] postTransferReport Headers: ${dio.options.headers}');
+    // print('[api-test] postTransferReport request: ${routine.toDeliveryMap()}');
+    print('[api-test] postTransferReport request: ${routine.toTransferMap()}');
+
+    final response = await dio.post(
+      postTransferReportUrl
+      // 'xxx'
+      ,
+      options: Options(
+        validateStatus: (status) => true,
+      ),
+      data: routine.toTransferMap(),
+    );
+
+    final responseMap = Map<String, dynamic>.from(response.data);
+
+    debugPrint(responseMap.toString());
+    debugPrint(response.statusCode.toString());
+
+    if (response.statusCode == 200) {
+      debugPrint(responseMap.toString());
+      return responseMap['message'];
+    } else {
+      throw ServerException(
+          message:
+              '[${response.statusCode}] ${responseMap['message'].toString()}');
+    }
+  }
+
+
+   @override
+  Future<String>? postTransferFromReport(
+      {required Routine routine, required String apiToken}) async {
+    debugPrint(routine.toTransferMap().toString());
+    String date = routine.toTransferMap()['arrived_date_time'];
+    debugPrint(date);
+    dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
+    dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
+    dio.options.headers['Accept'] = 'application/json';
+    
+    print('[api-test] postTransferFromReport apiToken ${apiToken}');
+    print('[api-test] postTransferFromReport URL: $postTransferFromReportUrl');
+    print('[api-test] postTransferFromReport request: ${routine.toTransferMap()}');
+
+    final response = await dio.post(
+      postTransferFromReportUrl,
+      options: Options(
+        validateStatus: (status) => true,
+      ),
+      data: routine.toTransferMap(),
     );
 
     final responseMap = Map<String, dynamic>.from(response.data);
@@ -213,9 +309,12 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
       data: routine.toRefillMap(),
     );
 
+    print('[api-test] postRefillReport url : ${postRefillReportUrl}');
+    print('[api-test] postRefillReport requsst : ${routine.toRefillMap()}');
+
     final responseMap = Map<String, dynamic>.from(response.data);
 
-    debugPrint(responseMap.toString());
+    debugPrint('[api-test] postRefillReport response ${responseMap}');
 
     if (response.statusCode == 200) {
       debugPrint(responseMap.toString());
@@ -233,13 +332,20 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     dio.options.headers[HttpHeaders.contentTypeHeader] = ContentType.json;
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     dio.options.headers['Accept'] = ContentType.json;
-    debugPrint(routine.toBillMap().toString());
+
+    print('[api-test] getBill URL: $getBillUrl');
+    print('[api-test] getBill postStartRoutine Headers: ${dio.options.headers}');
+    print('[api-test] getBill Payload: ${ routine.toBillMap()}');
+
     final response = await dio.get(
       getBillUrl,
       queryParameters: routine.toBillMap(),
       options: Options(validateStatus: (status) => true),
     );
-    debugPrint(response.toString());
+    
+    print('[api-test] getBill response 1 : ${response}');
+    print('[api-test] getBill response 2: ${response.toString()}');
+
     if (response.statusCode == 200) {
       final responseMap = List<Map<String, dynamic>>.from(response.data);
       final List<AdditionCharge> additionalChargesList =
@@ -276,6 +382,46 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
       return duStatus;
     } else {
       final responseMap = Map<String, dynamic>.from(response.data);
+      throw ServerException(
+          message:
+              '[${response.statusCode}] ${responseMap['message'].toString()}');
+    }
+  }
+
+
+  
+   @override
+  Future<String>? updateReacheadAt(
+      {required Routine routine, required String apiToken}) async {
+    debugPrint(routine.toDeliveryMap().toString());
+    String date = routine.toDeliveryMap()['arrived_date_time'];
+    debugPrint(date);
+    dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
+    dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
+    dio.options.headers['Accept'] = 'application/json';
+
+    
+    print('[api-test] updateReacheadAt apiToken ${apiToken}');
+    print('[api-test] updateReacheadAt URL: $postTransferFromReportUrl');
+    print('[api-test] updateReacheadAt request: ${ routine.toUpdateReachedMap()}');
+
+    final response = await dio.post(
+      updateReachedAt,
+      options: Options(
+        validateStatus: (status) => true,
+      ),
+      data: routine.toUpdateReachedMap(),
+    );
+
+    final responseMap = Map<String, dynamic>.from(response.data);
+
+    debugPrint(responseMap.toString());
+    debugPrint(response.statusCode.toString());
+
+    if (response.statusCode == 200) {
+      debugPrint(responseMap.toString());
+      return responseMap['message'];
+    } else {
       throw ServerException(
           message:
               '[${response.statusCode}] ${responseMap['message'].toString()}');

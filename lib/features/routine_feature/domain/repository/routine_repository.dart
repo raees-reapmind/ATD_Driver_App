@@ -33,4 +33,13 @@ abstract class RoutineRepository {
 
   Future<Either<Failure, String?>>? postDeliveryReport(
       {required Routine routine, required String apiToken});
+
+  Future<Either<Failure, String?>>? postTransferReport(
+      {required Routine routine, required String apiToken});
+
+  Future<Either<Failure, String?>>? postTransferFromReport(
+      {required Routine routine, required String apiToken});
+
+  Future<Either<Failure, String?>>? updateReacheadAt(
+      {required Routine routine, required String apiToken});
 }

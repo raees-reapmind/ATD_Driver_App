@@ -22,16 +22,17 @@ import '../../providers/routines_provider.dart';
 import '../../widgets/title_content.dart';
 import 'package:atd/utils/helper.dart';
 
-class DeliveryInvoiceScreen extends StatefulWidget {
+class TransferInvoiceScreen extends StatefulWidget {
   final int index;
-  const DeliveryInvoiceScreen({Key? key, required this.index})
+  final String? transferTime;
+  const TransferInvoiceScreen({Key? key, required this.index, this.transferTime})
       : super(key: key);
 
   @override
-  State<DeliveryInvoiceScreen> createState() => _DeliveryInvoiceScreenState();
+  State<TransferInvoiceScreen> createState() => _TransferInvoiceScreenState();
 }
 
-class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
+class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
   final TextEditingController receiverNameController = TextEditingController();
 
   final router = GoRouter(routes: [
@@ -65,75 +66,54 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Delivery Invoice",
+                          Center(
+                              child: Text(
+                                "Transfer Report",
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
-                              const SizedBox(width: 10),
-                              GestureDetector(
-                                onTap: () {
-                                  routineProvider.notifyDataChange();
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return RoutineInfoAlertDialog(
-                                            routine: routineProvider
-                                                .routines[widget.index],
-                                            onTapCancel: () =>
-                                                Navigator.of(context).pop());
-                                      });
-                                },
-                                child: const Icon(
-                                  Icons.info,
-                                  color: primary500,
+                            ),
+                            const SizedBox(height: 20),
+                            TitleContent(
+                              title: "To",
+                               isBold: true,
+                              content: routineProvider.routines[widget.index].action.toString() ?? '',
+                            ),
+                            TitleContent(
+                              title: "ID",
+                               isBold: true,
+                              content: routineProvider.routines[widget.index].vehicleNo ?? '',
+                            ),
+                            TitleContent(
+                              title: "Quantity",
+                               isBold: true,
+                              content: '${routineProvider.routines[widget.index].quantity.toString()} L',
+                            ),
+                            TitleContent(
+                              title: "Supervisor",
+                              isBold: true,
+                              content:"${routineProvider.routines[widget.index].price ?? '-'}",
+                            ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Expanded(
+                                child: Text(
+                                  'Location',
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          TitleContent(
-                            title: "Name",
-                            content:
-                                routineProvider.routines[widget.index].name,
-                          ),
-                          TitleContent(
-                            title: "Vehicle",
-                            content:
-                                loginProvider.userDetails?.vehicleRegNo ?? '',
-                          ),
-                          TitleContent(
-                            title: "Address",
-                            content:
-                                routineProvider.routines[widget.index].address,
-                          ),
-                          TitleContent(
-                            title: "Payment Mode",
-                            content: routineProvider
-                                .routines[widget.index].paymentMode
-                                .toString(),
-                          ),
-                          TitleContent(
-                            title: "Quantity",
-                            content:
-                                "${routineProvider.routines[widget.index].quantity} L",
-                          ),
-                          TitleContent(
-                            title: "Actual Quantity",
-                            content:
-                                "${routineProvider.routines[widget.index].endQuantity} L",
-                            isBold: true,
-                          ),
-                          TitleContent(
-                            title: "Total Assets Delivered",
-                            content: routineProvider
-                                .routines[widget.index].assetsReport.length
-                                .toString(),
-                            isBold: true,
-                          ),
+                              const SizedBox(height: 10,),
+                              Expanded(
+                                child: Text(
+                                  textAlign: TextAlign.end,
+                                  "${routineProvider.routines[widget.index].address} L",
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                  style:const TextStyle(fontWeight: FontWeight.bold)
+                                ),
+                              )
+                              ]
+                            ),
                           routineProvider.routines[widget.index]
                                       .additionalChargesList !=
                                   null
@@ -159,45 +139,25 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
                                   },
                                 )
                               : const SizedBox.shrink(),
+
+                            const SizedBox(height: 30,),
+                            TitleContent(
+                              title: "Quantity",
+                              content: '${routineProvider.routines[widget.index].quantity.toString()} L',
+                            ),
+
+                            TitleContent(
+                              title: "Actual Quantity",
+                              isBold: true,
+                              content: '${routineProvider.routines[widget.index].endQuantity.toString()} L',
+                            ),
+
                           TitleContent(
-                            title: "Total Price",
-                            content: routineProvider
-                                .routines[widget.index].endPrice
-                                .toString(),
+                            title: "Time of Transfer",
                             isBold: true,
+                            content: '${widget.transferTime}',
                           ),
-                          routineProvider.routines[widget.index].recieverName !=
-                                      null &&
-                                  routineProvider
-                                          .routines[widget.index].imageList !=
-                                      null
-                              ? Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TitleContent(
-                                        isBold: true,
-                                        title: 'Receiver Name',
-                                        content: routineProvider
-                                            .routines[widget.index].recieverName
-                                            .toString()),
-                                    const TitleContent(
-                                        isBold: true,
-                                        title: 'Receiver Signature',
-                                        content: 'Attached'),
-                                  ],
-                                )
-                              : const TitleContent(
-                                  title: 'Receiver Details', content: 'NA'),
-                          routineProvider.routines[widget.index].imageList !=
-                                  null
-                              ? const TitleContent(
-                                  isBold: true,
-                                  title: 'Receipt Image',
-                                  content: 'Attached')
-                              : const TitleContent(
-                                  title: 'Receipt Image',
-                                  content: 'NA',
-                                ),
+
                           const SizedBox(height: 20),
 
                           Row(
@@ -210,24 +170,7 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
                                           routineProvider,
                                           widget.index),
                                       title: 'Finish')),
-                              const SizedBox(width: 10),
-                              SignatureButton(
-                                onTap: () => signatureClickEvent(
-                                    context,
-                                    routineProvider,
-                                    widget.index,
-                                    loginProvider,
-                                    imageUploadProvider),
-                              ),
-                              const SizedBox(width: 10),
-                              CameraButton(
-                                onTap: () => receiptClickEvent(
-                                    context,
-                                    loginProvider,
-                                    routineProvider,
-                                    widget.index,
-                                    imageUploadProvider),
-                              ),
+                             
                             ],
                           )
                         ],
@@ -307,7 +250,9 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
       RoutinesProvider routineProvider, int index) async {
     routineProvider.routines[index].endDateTime = DateTime.now();
 
-    await routineProvider.eitherFailureOrPostDeliveryReport(
+    print('[id-test] ${routineProvider.routines[index].toDeliveryMap()}');
+
+    await routineProvider.eitherFailureOrPostTransferReport(
             apiToken: loginProvider.userDetails!.apiToken!,
             routine: routineProvider.routines[index])
         .then((value) async {

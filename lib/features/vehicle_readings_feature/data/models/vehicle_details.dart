@@ -13,7 +13,7 @@ class VehicleReadings {
   double? fuelLevel;
   List<ImageDetails> imageDetailsList = [];
 
-   String? referenceType;
+  String? referenceType;
   String? referenceId;
 
   VehicleReadings({

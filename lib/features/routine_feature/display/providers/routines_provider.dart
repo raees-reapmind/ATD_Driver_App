@@ -11,6 +11,7 @@ import 'package:atd/features/routine_feature/domain/usecases/get_routines.dart';
 import 'package:atd/features/routine_feature/domain/usecases/post_delivery_report.dart';
 import 'package:atd/features/routine_feature/domain/usecases/post_end_routine.dart';
 import 'package:atd/features/routine_feature/domain/usecases/post_refill_report.dart';
+import 'package:atd/utils/helper.dart';
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -58,6 +59,7 @@ class RoutinesProvider extends ChangeNotifier {
   double totalDeliverdQuantity = 0;
   int ordersDelivered = 0;
   int ordersPending = 0;
+  bool isRoutineEnd = false;
 
   bool get isLoading => _isLoading;
 
@@ -91,7 +93,7 @@ class RoutinesProvider extends ChangeNotifier {
     totalDeliverdQuantity = 0;
     ordersPending = 0;
     for (Routine routine in routines) {
-      if (routine.type == 'delivery') {
+      if (routine.type == 'delivery') { 
         if (routine.statusCode == 3) {
           if (routine.quantity != null) {
             totalDeliverdQuantity = totalDeliverdQuantity + routine.quantity!;
@@ -112,19 +114,28 @@ class RoutinesProvider extends ChangeNotifier {
     required ImageUploadProvider imageUploadProvider,
     required int index,
     required double? quantity,
+    String? selectedDu
   }) async {
     double currentQuantity = routines[index].endQuantity;
 
     // Check if an image is uploaded
     if (imageList.isEmpty) return Result.image;
 
+    debugPrint('[api-test] createAssetDelivery asset: ${asset?.name}');
+    debugPrint('[api-test] createAssetDelivery q: ${asset?.quantity}');
+    debugPrint('[api-test] createAssetDelivery subjectType: ${asset?.subjectType}');
+
+    imageList.forEach((element) {
+        debugPrint('[api-test] createAssetDelivery image: ${element.imageId}');
+    });
+
     // Check if the quantity is valid
     if (quantity == null) return Result.quantityFormat;
 
     // Check if the quantity does not exceed the allowed limit
-    if (currentQuantity + quantity > routines[index].quantity!) {
-      return Result.quantityGreater;
-    }
+    // if (currentQuantity + quantity > routines[index].quantity!) {
+    //   return Result.quantityGreater;
+    // }
 
     // Upload each image and handle failure if any
     for (ImageDetails imageDetails in imageList) {
@@ -140,14 +151,108 @@ class RoutinesProvider extends ChangeNotifier {
     }
 
     // Only update asset-related information if an asset is selected
-    if (asset != null) {
-      asset.endQuantity = quantity;
-      asset.images = imageList;
-      routines[index].assetsReport.add(asset);
-    }
+    // if (asset != null) {
+    //   asset.endQuantity = quantity;
+    //   asset.images = imageList;
+    //   routines[index].assetsReport.add(asset);
+    // }
+
+   Asset newAsset = Asset(
+    id: generateYYYYMMDDHHMMSSUniqueId(),
+    name: asset!.name, // Force unwrap (will throw an error if null)
+    type: asset!.type,
+    qrCode: asset!.qrCode,
+    quantity: asset!.quantity,
+    capacity: asset!.capacity,
+    endQuantity: quantity,
+    odometer: asset!.odometer,
+    receiptImage: asset!.receiptImage,
+    subjectType: asset!.subjectType
+  );
+
+
+  // Assign a new list reference for images
+  newAsset.images = List.from(imageList);
+
+  routines[index].assetsReport.add(newAsset);
 
     // Update the routine's end quantity
     routines[index].endQuantity += quantity;
+    routines[index].selectedDu = selectedDu;
+
+    debugPrint('ASSET REPORT ADDED : $asset');
+    notifyListeners();
+
+    return Result.success;
+  }
+
+
+   Future<Result> createAssetDeleveryForTransfer({
+    required LoginProvider loginProvider,
+    required Asset? asset, // Make asset nullable
+    required List<ImageDetails> imageList,
+    required ImageUploadProvider imageUploadProvider,
+    required int index,
+    required double? quantity,
+    String? selectedDu
+  }) async {
+    double currentQuantity = routines[index].endQuantity;
+
+    // Check if an image is uploaded
+    if (imageList.isEmpty) return Result.image;
+
+    debugPrint('[api-test] createAssetDelivery asset: ${asset?.name}');
+    debugPrint('[api-test] createAssetDelivery q: ${asset?.quantity}');
+    debugPrint('[api-test] createAssetDelivery selectedDu: ${selectedDu}');
+
+    imageList.forEach((element) {
+        debugPrint('[api-test] createAssetDelivery image: ${element.imageId}');
+    });
+
+    // Check if the quantity is valid
+    if (quantity == null) return Result.quantityFormat;
+
+    // Check if the quantity does not exceed the allowed limit
+    // if (currentQuantity + quantity > routines[index].quantity!) {
+    //   return Result.quantityGreater;
+    // }
+
+    // Upload each image and handle failure if any
+    for (ImageDetails imageDetails in imageList) {
+      int? imageId = await imageUploadProvider.eitherFailureOrUploadImage(
+        imagePath: imageDetails.imagePath!,
+        apiToken: loginProvider.userDetails!.apiToken!,
+      );
+      if (imageId != null) {
+        imageDetails.imageId = imageId;
+      } else {
+        return Result.imageUpload;
+      }
+    }
+
+    // Only update asset-related information if an asset is selected
+    // if (asset != null) {
+    //   asset.endQuantity = quantity;
+    //   asset.images = imageList;
+    //   routines[index].assetsReport.add(asset);
+    // }
+
+
+  Asset newAsset = Asset(
+    id: generateYYYYMMDDHHMMSSUniqueId(),
+    name: asset!.name, // Force unwrap (will throw an error if null)
+    type: asset!.type,
+    qrCode: asset!.qrCode,
+    quantity: asset!.quantity,
+    capacity: asset!.capacity,
+    endQuantity: quantity,
+    odometer: asset!.odometer,
+    receiptImage: asset!.receiptImage,
+    subjectType: asset!.subjectType
+  );
+    // Update the routine's end quantity
+    routines[index].endQuantity += quantity;
+    routines[index].selectedDu = selectedDu;
 
     debugPrint('ASSET REPORT ADDED : $asset');
     notifyListeners();
@@ -242,9 +347,9 @@ class RoutinesProvider extends ChangeNotifier {
     double currentQuantity = routines[index].endQuantity;
     if (image == null) return Result.image;
     if (quantity == null) return Result.quantityFormat;
-    if (currentQuantity + quantity > routines[index].quantity!) {
-      return Result.quantityGreater;
-    }
+    // if (currentQuantity + quantity > routines[index].quantity!) {
+    //   return Result.quantityGreater;
+    // }
     int? imageId = await imageUploadProvider.eitherFailureOrUploadImage(
         imagePath: image.imagePath!,
         apiToken: loginProvider.userDetails!.apiToken!);
@@ -406,6 +511,7 @@ class RoutinesProvider extends ChangeNotifier {
 
   Future<bool> eitherFailureOrGetBill(
       {required String apiToken, required int index}) async {
+        print('[api-test] eitherFailureOrGetBill called---');
     RoutineRepositoryImpl repository = RoutineRepositoryImpl(
       remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
       localDataSource:
@@ -430,4 +536,96 @@ class RoutinesProvider extends ChangeNotifier {
     });
     return isSuccess;
   }
+
+
+  Future<bool> eitherFailureOrPostTransferReport(
+      {required String apiToken, required Routine routine}) async {
+    RoutineRepositoryImpl repository = RoutineRepositoryImpl(
+      remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
+      localDataSource:
+          RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
+      networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+    );
+    bool isSuccess = true;
+    final result = await PostTransferReport(repository: repository)
+        .call(apiToken: apiToken, routine: routine);
+    result?.fold((newFailure) {
+      message = newFailure.errorMessage;
+      debugPrint(newFailure.errorMessage);
+      failure = newFailure;
+      notifyListeners();
+      isSuccess = false;
+    }, (data) {
+      failure = null;
+      message = data;
+      debugPrint(message.toString());
+      notifyListeners();
+      isSuccess = true;
+    });
+    return isSuccess;
+  }
+
+
+  Future<bool> eitherFailureOrPostTransferFromReport(
+      {required String apiToken, required Routine routine}) async {
+    RoutineRepositoryImpl repository = RoutineRepositoryImpl(
+      remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
+      localDataSource:
+          RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
+      networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+    );
+    bool isSuccess = true;
+    final result = await PostTransferFromReport(repository: repository)
+        .call(apiToken: apiToken, routine: routine);
+    result?.fold((newFailure) {
+      message = newFailure.errorMessage;
+      debugPrint(newFailure.errorMessage);
+      failure = newFailure;
+      notifyListeners();
+      isSuccess = false;
+    }, (data) {
+      failure = null;
+      message = data;
+      debugPrint(message.toString());
+      notifyListeners();
+      isSuccess = true;
+    });
+    return isSuccess;
+  }
+
+
+  Future<bool> updateReachedAt(
+      {required String apiToken, required Routine routine}) async {
+    RoutineRepositoryImpl repository = RoutineRepositoryImpl(
+      remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
+      localDataSource:
+          RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
+      networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+    );
+    bool isSuccess = true;
+    final result = await UpdateReacheadAt(repository: repository)
+        .call(apiToken: apiToken, routine: routine);
+    result?.fold((newFailure) {
+      message = newFailure.errorMessage;
+      debugPrint(newFailure.errorMessage);
+      failure = newFailure;
+      notifyListeners();
+      isSuccess = false;
+    }, (data) {
+      failure = null;
+      message = data;
+      debugPrint(message.toString());
+      notifyListeners();
+      isSuccess = true;
+    });
+    return isSuccess;
+  }
+
+
 }
+
+
+
+
+
+

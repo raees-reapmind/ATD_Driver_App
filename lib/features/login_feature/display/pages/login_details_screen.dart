@@ -389,11 +389,25 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
                                       const SizedBox(height: 10),
                                       routineProvider.routines.isNotEmpty
                                           ? CustomButton(
-                                              onTap: () => startTripClickEvent(
+                                              // onTap: () => startTripClickEvent(
+                                              //     context,
+                                              //     vehicleDetailsProvider,
+                                              //     loginProvider,
+                                              //     imageUploadProvider),
+                                              onTap: () {
+                                                getRoutineClickEvent(
+                                                  context,
+                                                  routineProvider,
+                                                  loginProvider,
+                                                  vehicleDetailsProvider);
+                                              Future.delayed(const Duration(seconds: 2), () {
+                                                startTripClickEvent(
                                                   context,
                                                   vehicleDetailsProvider,
                                                   loginProvider,
-                                                  imageUploadProvider),
+                                                  imageUploadProvider);
+                                              });
+                                              },
                                               textColor: white500,
                                               backgroundColor: secondary500,
                                               splashColor: primary500,
@@ -548,13 +562,11 @@ Future<String?> getPlanId() async {
           onTapSave: () async {
 
             final odometerReading = double.tryParse(odometerController.text.toString());
-            final totalizerLeftReading = double.tryParse(odometerController.text.toString());
-            final totalizerRightReading = double.tryParse(odometerController.text.toString());
+            final totalizerLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
+            final totalizerRightReading = double.tryParse(totalizerDuRightController.text.toString());
 
             if (vehicleReadingsProvider.vehicleReadings!.imageDetailsList.isNotEmpty &&  
-                odometerReading != null &&
-                totalizerLeftReading != null &&
-                totalizerRightReading != null) {
+                odometerReading != null && totalizerLeftReading != null && totalizerRightReading != null) {
 
               String? planId = await getPlanId(); 
 
@@ -582,12 +594,14 @@ Future<String?> getPlanId() async {
                 }
                 isUploaded = true;
               }
+
               if (isUploaded) {
                 await vehicleReadingsProvider.eitherFailureOrPostVehicleDetails(
                         apiToken: loginProvider.userDetails!.apiToken!)
                     .then((value) {
                   loginProvider.changeSessionStage(
                       sessionStage: SessionStage.vehicleChecks);
+                  clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
                   navigateToNextScreen(context);
                 });
               } else {
@@ -595,12 +609,16 @@ Future<String?> getPlanId() async {
                 showSnackBar(
                     context: context, message: 'Error in uploading data');
               }
+              
             } else {
               showSnackBar(
                   context: context, message: 'All fields are mandatory');
             }
           },
-          onTapCancel: () => Navigator.of(context).pop(),
+          onTapCancel: () {
+            clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+             Navigator.of(context).pop();
+          },
         );
       },
     );

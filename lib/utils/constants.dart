@@ -2,14 +2,22 @@
 //const mainUrl = 'http://65.0.125.193'; // live
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 // const mainUrl = 'https://uat.anytimediesel.com'; // took from postman
 const duUrl = 'http://192.168.202.155:8001';
 //const mainUrl = 'http://3.110.218.28'; // new live
-//const mainUrl = 'https://oms.anytimediesel.com';// Prod Url
+// const mainUrl = 'https://oms.anytimediesel.com';// Prod Url
 const getOtpUrl = '$mainUrl/api/driver/login';
 const mainUrl = 'https://phpstack-906681-5029380.cloudwaysapps.com';// Dev Url
+
+// build test
+
+// const mainUrl = 'https://uat.anytimediesel.com';// Prod Url
+// const mainUrl = 'https://phpstack-906681-5115782.cloudwaysapps.com'; // dev url CODE MERGE
+
+//  code merge - consumer app
+// middleware: 'https://uat.anytimediesel.com/api', // uat
+
 
 const putOtpUrl = '$mainUrl/api/otp';
 const getVehicleChecksUrl = '$mainUrl/api/app/vehicle-checklists';
@@ -34,25 +42,29 @@ const vehicleChecksBoxKey = 'vehicle_checks_box_key';
 const dispenserChecksBoxKey = 'dispenser_checks_box_key';
 const routinesBoxKey = 'routines_box_key';
 
+const liveLocationPostApi = '$mainUrl/endpoint';
+const postTransferReportUrl = '$mainUrl/api/app/routines/internal-transfer';
+const postTransferFromReportUrl = '$mainUrl/api/app/routines/internal-transfer-from';
+const updateReachedAt = '$mainUrl/api/app/update-reached-at';
 
 void showLoading() {
   if (Get.isDialogOpen == true) {
     //log("Show loading called ...");
     Get.dialog(
       //barrierDismissible: false,
-      Dialog(
+      const Dialog(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding:  EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(
+               CircularProgressIndicator(
                 color: Colors.grey,
               ),
               // const SizedBox(height: 8),
               Text(
                  'Loading...',
-                style: const TextStyle(fontSize: 12, color: Colors.black),
+                style:  TextStyle(fontSize: 12, color: Colors.black),
               ),
             ],
           ),

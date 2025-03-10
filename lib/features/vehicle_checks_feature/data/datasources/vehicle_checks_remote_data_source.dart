@@ -32,7 +32,8 @@ class VehicleChecksRemoteDataSourceImpl
       getVehicleChecksUrl,
       options: Options(validateStatus: (status) => true),
     );
-    debugPrint(response.data.toString());
+    debugPrint('[cache-test] getVehicleChecks token ${apiToken}');
+    debugPrint('[cache-test] getVehicleChecks response ${response.data}');
     if (response.statusCode == 200) {
       final responseMap = Map<String, dynamic>.from(response.data);
       // if (responseMap['results'] != null) {
@@ -69,9 +70,9 @@ class VehicleChecksRemoteDataSourceImpl
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     String? planId = await getPlanId();
 
-    debugPrint('[api-test] setVehicleChecks URL: $postVehicleChecksUrl');
+    debugPrint('[cache-test] setVehicleChecks URL: $postVehicleChecksUrl');
 
-    debugPrint('[api-test] setVehicleChecks request : ${
+    debugPrint('[cache-test] setVehicleChecks request : ${
       {
         "route_plan_id" : planId,
         "checks": vehicleChecks.map((e) => e.toMap()).toList(),

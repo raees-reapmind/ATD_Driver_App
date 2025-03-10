@@ -14,9 +14,9 @@ class DispenserChecksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dispenserChecksProvider =
-        Provider.of<DispenserChecksProvider>(context);
+    final dispenserChecksProvider = Provider.of<DispenserChecksProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
+
     return Scaffold(
       appBar: AppBar(actions: [
         const Center(child: Text('Logout')),
@@ -63,14 +63,12 @@ class DispenserChecksScreen extends StatelessWidget {
                         shrinkWrap: true,
                         padding: const EdgeInsets.only(bottom: 10),
                         physics: const BouncingScrollPhysics(),
-                        itemCount:
-                            dispenserChecksProvider.dispenserChecksList.length,
+                        itemCount: dispenserChecksProvider.dispenserChecksList.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: DispenserCheckCard(
-                                dispenserCheck: dispenserChecksProvider
-                                    .dispenserChecksList[index]),
+                                dispenserCheck: dispenserChecksProvider.dispenserChecksList[index]),
                           );
                         },
                       ),
@@ -122,14 +120,10 @@ class DispenserChecksScreen extends StatelessWidget {
         .then((isSuccess) {
       if (isSuccess) {
         loginProvider.changeSessionStage(sessionStage: SessionStage.dashboard);
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) => const HomeScreen()));
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HomeScreen()));
+        dispenserChecksProvider.clearDispenserChecksList();
       } else {
-        showDialog(
-            context: context,
-            builder: (context) => FailureDialog(
-                content:
-                    dispenserChecksProvider.failure!.errorMessage.toString()));
+        showDialog( context: context, builder: (context) => FailureDialog(content:dispenserChecksProvider.failure!.errorMessage.toString()));
       }
     });
   }

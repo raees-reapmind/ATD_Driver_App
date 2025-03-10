@@ -154,7 +154,7 @@ class RefillScreen extends StatelessWidget {
                                   FloatingActionButton(
                                     onPressed: () =>
                                         createBillClickEvent(context, index),
-                                    child: const Icon(Icons.add),
+                                    child: const Icon(Icons.add,color: Colors.white,),
                                   )
                                 ],
                               )
