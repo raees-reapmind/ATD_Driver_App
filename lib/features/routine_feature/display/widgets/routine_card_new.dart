@@ -23,6 +23,7 @@ class RoutineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // debugPrint('routine.status ${routine.status}');
     switch (routine.type) {
       case 'delivery':
         return Container(
@@ -47,6 +48,10 @@ class RoutineCard extends StatelessWidget {
                     children: [
                       const Text("Order"),
                       Text(
+                        routine.status == 'Completed' 
+                        ?
+                        "${routine.delieverdQuantity} L"
+                        :
                         "${routine.quantity} L",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,

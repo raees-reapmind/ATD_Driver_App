@@ -43,6 +43,22 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
   int DuConnectCounter = 0;
   int totCount = 0;
   String formattedVlueQty = "";
+
+    @override
+    void initState() {
+      super.initState();
+
+      // Delay the call until after the widget is built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final routineProvider = Provider.of<RoutinesProvider>(context, listen: false);
+        final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+        final vehicleDetailsProvider = Provider.of<VehicleReadingsProvider>(context, listen: false);
+
+        getRoutineClickEvent(context, routineProvider, loginProvider, vehicleDetailsProvider);
+      });
+    }
+
+
   ////////////////Pallab
   Future<void> checkTOT(int flag, TextEditingController controller) async {
     print('[api-test] login Check TOT clicked $flag');
@@ -641,6 +657,7 @@ Future<String?> getPlanId() async {
             content: routineProvider.failure!.errorMessage!.toString()),
       );
     }
+
   }
 
   void navigateToNextScreen(BuildContext context) {

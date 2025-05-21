@@ -21,6 +21,8 @@ class HomeScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text(navigationProvider
               .pageList[navigationProvider.selectedPageIndex].title),
+          foregroundColor: Colors.white,
+
           actions: [
             IconButton(
                 onPressed: () =>

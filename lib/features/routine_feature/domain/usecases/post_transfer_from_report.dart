@@ -4,17 +4,17 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
 import '../../data/models/routine.dart';
 
-class PostDeliveryReport {
+
+class PostTransferFromReport {
   final RoutineRepository repository;
 
-  PostDeliveryReport({required this.repository});
+  PostTransferFromReport({required this.repository});
 
   Future<Either<Failure, String?>?> call({
     required Routine routine,
     required String apiToken,
   }) async {
-    return await repository.postDeliveryReport(
+    return await repository.postTransferFromReport(
         routine: routine, apiToken: apiToken);
   }
 }
-

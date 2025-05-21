@@ -25,6 +25,10 @@ import '../../data/models/bill.dart';
 import '../../data/models/routine.dart';
 import '../../domain/usecases/get_bill.dart';
 import '../../domain/usecases/post_start_routine.dart';
+import '../../domain/usecases/update_reached_at.dart';
+import '../../domain/usecases/post_transfer_from_report.dart';
+import '../../domain/usecases/post_transfer_report.dart';
+
 
 enum Result {
   quantityFormat,

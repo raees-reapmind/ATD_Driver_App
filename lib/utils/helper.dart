@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:atd/features/dispenser_checks_feature/display/providers/dispenser_checks_provider.dart';
 import 'package:atd/features/location_feature/display/provider/location_provider.dart';
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
 import 'package:atd/features/routine_feature/display/providers/routines_provider.dart';
+import 'package:atd/features/vehicle_checks_feature/display/provider/vehicle_checks_provider.dart';
+import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_details_provider.dart';
 import 'package:atd/utils/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,6 +45,16 @@ Future<String?> getPlanId() async {
   }
 }
 
+Future<void> clearDataOnLogOut(
+      BuildContext context, 
+      DispenserChecksProvider dispenserChecksProvider,
+      VehicleChecksProvider vehicleChecksProvider, 
+    ) async {
+      debugPrint('clearDataOnLogOut called----');
+      dispenserChecksProvider.clearDispenserChecksList();
+      vehicleChecksProvider.clearVehicleChecks();
+}
+
 Future<void> clearSharedPref() async {
   try {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -54,6 +67,56 @@ Future<void> clearSharedPref() async {
     debugPrint('[pref-test] SharedPreferences error: $e');
   }
 }
+
+Future<void> saveUserIdOnce(int vehicleId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final existing = prefs.getString('id_userstep');
+  
+  if (existing == null || !existing.contains('_')) {
+    await prefs.setString('id_userstep', '${vehicleId}_1'); // initial step is 0
+  }
+}
+
+
+Future<void> updateUserStep(int newStep) async {
+  final prefs = await SharedPreferences.getInstance();
+  final data = prefs.getString('id_userstep');
+  if (data != null && data.contains('_')) {
+    final parts = data.split('_');
+    final vehicleId = parts[0];
+    await prefs.setString('id_userstep', '${vehicleId}_$newStep');
+    final confirmedValue = prefs.getString('id_userstep');
+    debugPrint('[SharedPref] Confirmed updated value: $confirmedValue');
+  }
+}
+
+
+Future<void> checkAndRedirect(int currentVehicleId, BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  final data = prefs.getString('id_userstep');
+
+  if (data != null && data.contains('_')) {
+    final parts = data.split('_');
+    final storedId = int.tryParse(parts[0]);
+    final step = int.tryParse(parts[1]);
+
+    if (storedId == currentVehicleId) {
+      switch (step) {
+        case 1:
+          Navigator.pushNamed(context, '/step1');
+          break;
+        case 2:
+          Navigator.pushNamed(context, '/step2');
+          break;
+        // Add more steps if needed
+        default:
+          break;
+      }
+    }
+  }
+}
+
+
 
 void startLocationUpdates(LoginProvider loginProvider,RoutinesProvider routineProvider) {
   

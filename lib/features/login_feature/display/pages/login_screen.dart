@@ -1,11 +1,25 @@
+import 'package:atd/core/connection/network_info.dart';
+import 'package:atd/core/database/database_helper.dart';
+import 'package:atd/features/dispenser_checks_feature/display/pages/dispenser_checks_screen.dart';
+import 'package:atd/features/dispenser_checks_feature/display/providers/dispenser_checks_provider.dart';
+import 'package:atd/features/home_navigation_feature/display/pages/home_screen.dart';
+import 'package:atd/features/login_feature/data/datasources/login_local_data_source.dart';
+import 'package:atd/features/login_feature/data/datasources/login_remote_data_source.dart';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import 'package:atd/features/login_feature/display/pages/login_details_screen.dart';
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
+import 'package:atd/features/routine_feature/display/pages/dashboard_screen.dart';
+import 'package:atd/features/vehicle_checks_feature/display/pages/vehicle_checks_screen.dart';
+import 'package:atd/features/vehicle_checks_feature/display/provider/vehicle_checks_provider.dart';
 import 'package:atd/utils/utils_export.dart';
+import 'package:data_connection_checker_tv/data_connection_checker.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import '../../data/models/user_details.dart';
+import 'package:atd/features/login_feature/data/repository/login_repository_impl.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,9 +35,27 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isFinished = false;
 
   @override
-  void initState() {
-    // TODO: implement initState
+  void initState() { 
     clearSharedPref();
+    LoginRepositoryImpl repository = LoginRepositoryImpl(
+      remoteDataSource: LoginRemoteDataSourceImpl(dio: Dio()),
+      localDataSource: LoginLocalDataSourceImpl(
+          loginDetailsBox: DatabaseHelper().userDetailsBox),
+      networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+    );
+    repository.localDataSource.setUserDetails(userDetails: null);
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      final dispenserChecksProvider =  Provider.of<DispenserChecksProvider>(context, listen: false); 
+      final vehicleChecksProvider =  Provider.of<VehicleChecksProvider>(context, listen: false); 
+
+      clearDataOnLogOut(
+          context, 
+          dispenserChecksProvider,
+          vehicleChecksProvider,
+        );
+    });
+      
     super.initState();
   }
 
@@ -225,11 +257,45 @@ class _LoginScreenState extends State<LoginScreen> {
       if (provider.userDetails != null && provider.failure == null) {
         provider.userDetails?.sessionStage = SessionStage.loginDetails;
         provider.changeSessionStage(sessionStage: SessionStage.loginDetails);
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => const LoginDetailsScreen(),
-        ));
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) => const LoginDetailsScreen(),
+        // ));
+
+      debugPrint('step-----${provider.userDetails?.step}');
+
+      //331
+
+      if (provider.userDetails?.step != null) {
+
+          switch (provider.userDetails?.step) {
+            case 0: 
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const LoginDetailsScreen(),
+              ));
+              break;
+            case 1:  
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const VehicleChecksScreen(),
+              ));
+              break;
+            case 2: 
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const DispenserChecksScreen(),
+              ));
+              break;
+            case 3  : 
+             Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              )); 
+              break;
+            default: 
+          }
+       
+        }
+
       }
     });
+
   }
 
   void getOtpClickEvent(

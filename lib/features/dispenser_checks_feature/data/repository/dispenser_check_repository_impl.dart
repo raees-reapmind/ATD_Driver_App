@@ -56,7 +56,7 @@ class DispenserCheckRepositoryImpl implements DispenserCheckRepository {
         return Left(ServerFailure(errorMessage: errorMessage.toString()));
       }
     } else {
-      return Left(
+      return Left( 
           NetworkConnectionFailure(errorMessage: "No internet connection"));
     }
   }

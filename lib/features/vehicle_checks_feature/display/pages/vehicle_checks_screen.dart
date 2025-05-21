@@ -2,15 +2,41 @@ import 'package:atd/features/dispenser_checks_feature/display/pages/dispenser_ch
 import 'package:atd/features/home_navigation_feature/display/pages/home_screen.dart';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
+import 'package:atd/features/routine_feature/display/providers/routines_provider.dart';
 import 'package:atd/features/vehicle_checks_feature/display/provider/vehicle_checks_provider.dart';
 import 'package:atd/features/vehicle_checks_feature/domain/entities/vehicle_check.dart';
+import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_details_provider.dart';
 import 'package:atd/utils/utils_export.dart';
 import 'package:atd/utils/widgets/failure_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class VehicleChecksScreen extends StatelessWidget {
+class VehicleChecksScreen extends StatefulWidget {
   const VehicleChecksScreen({Key? key}) : super(key: key);
+
+  @override
+  State<VehicleChecksScreen> createState() => _VehicleChecksScreenState();
+}
+
+class _VehicleChecksScreenState extends State<VehicleChecksScreen> {
+
+@override
+  void initState() {
+    super.initState();
+
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+      final routineProvider =
+          Provider.of<RoutinesProvider>(context, listen: false);
+      final loginProvider =
+          Provider.of<LoginProvider>(context, listen: false);
+      final vehicleDetailsProvider =
+          Provider.of<VehicleReadingsProvider>(context, listen: false);
+
+      getRoutineClickEvent(context, routineProvider, loginProvider, vehicleDetailsProvider);
+    });
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +185,26 @@ class VehicleChecksScreen extends StatelessWidget {
     );
   }
 
+  void getRoutineClickEvent(
+      BuildContext context,
+      RoutinesProvider routineProvider,
+      LoginProvider loginProvider,
+      VehicleReadingsProvider vehicleDetailsProvider) async {
+    debugPrint(loginProvider.userDetails.toString());
+    final isSuccess = await routineProvider.eitherFailureOrGetRoutines(
+        apiToken: loginProvider.userDetails!.apiToken!);
+    print('login data $isSuccess');
+    if (!isSuccess) {
+      // ignore: use_build_context_synchronously
+      showDialog(
+        context: context,
+        builder: (context) => FailureDialog(
+            content: routineProvider.failure!.errorMessage!.toString()),
+      );
+    }
+
+  }
+
   void saveClickEvent(VehicleChecksProvider vehicleChecksProvider,
       LoginProvider loginProvider, BuildContext context) async {
 
@@ -179,7 +225,9 @@ class VehicleChecksScreen extends StatelessWidget {
         if (isSuccess) {
           loginProvider.changeSessionStage(
               sessionStage: SessionStage.dispenserChecks);
-          // vehicleChecksProvider.clearVehicleChecks();
+          vehicleChecksProvider.clearVehicleChecks();
+              //  updateUserStep(3);
+       debugPrint('updateUserStep: $updateUserStep');
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => const DispenserChecksScreen(),
           ));

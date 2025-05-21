@@ -72,7 +72,7 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
 
     final responseMap = Map<String, dynamic>.from(response.data);
 
-    debugPrint(responseMap.toString());
+    log('[api-test] getRoutines response ${responseMap.toString()}');
 
     if (response.statusCode == 200) {
       debugPrint(responseMap.toString());
@@ -275,13 +275,20 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     dio.options.headers['Accept'] = 'application/json';
+    
     final response = await dio.post(
       postEndRoutineUrl,
       options: Options(validateStatus: (status) => true),
       data: routine.toEndTripMap(),
+      
     );
 
-    final responseMap = Map<String, dynamic>.from(response.data);
+      debugPrint('[api-test] postEndRoutine rurl : ${postEndRoutineUrl}');
+      debugPrint('[api-test] postEndRoutine request ${routine.toEndTripMap()}');
+
+      final responseMap = Map<String, dynamic>.from(response.data);
+
+      debugPrint('[api-test] postEndRoutine responseMap: ${responseMap}');
 
     debugPrint(responseMap.toString());
 

@@ -51,6 +51,7 @@ class _TransferFromCreateAssetReportScreenState extends State<TransferFromCreate
   int totCount = 0;
   String formattedVlueQty = "";
   Timer? _timer;
+  
   @override
   void initState() {
     if (widget.routine.assetList == null || widget.routine.assetList!.isEmpty) {
@@ -323,8 +324,6 @@ class _TransferFromCreateAssetReportScreenState extends State<TransferFromCreate
 
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-    final dispenserChecksProvider = Provider.of<DispenserChecksProvider>(context);
-
 
     setState(() {
       quantity = routineProvider.routines[widget.index].quantity;
@@ -370,41 +369,41 @@ class _TransferFromCreateAssetReportScreenState extends State<TransferFromCreate
                                 child: 
                                
                                 TextField(
-  controller: quantityController,
-  onChanged: (value) {
-    if (dropDownAsset == null) {
-      debugPrint("[test] Creating a new asset instance");
-      dropDownAsset = Asset(
-        id: null,
-        name: "", // Default name
-        type: "NA",
-        qrCode: "NA",
-        quantity: double.tryParse(value),
-      );
-    } else {
-      dropDownAsset = dropDownAsset!.copyWith(
-        quantity: double.tryParse(value),
-      );
-    }
-    debugPrint('[from-test] dropDownAsset.quantity: ${dropDownAsset?.quantity}');
-  },
-  keyboardType: TextInputType.number,
-  decoration: const InputDecoration(
-    counterText: "",
-    filled: true,
-    fillColor: white300,
-    hintText: "Quantity",
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(20)),
-      borderSide: BorderSide(
-        color: Colors.black12, style: BorderStyle.solid, width: 2),
-    ),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(20)),
-      borderSide: BorderSide(style: BorderStyle.none, width: 0),
-    ),
-  ),
-)
+                                      controller: quantityController,
+                                      onChanged: (value) {
+                                        if (dropDownAsset == null) {
+                                          debugPrint("[test] Creating a new asset instance");
+                                          dropDownAsset = Asset(
+                                            id: null,
+                                            name: "", // Default name
+                                            type: "NA",
+                                            qrCode: "NA",
+                                            quantity: double.tryParse(value),
+                                          );
+                                        } else {
+                                          dropDownAsset = dropDownAsset!.copyWith(
+                                            quantity: double.tryParse(value),
+                                          );
+                                        }
+                                        debugPrint('[from-test] dropDownAsset.quantity: ${dropDownAsset?.quantity}');
+                                      },
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        counterText: "",
+                                        filled: true,
+                                        fillColor: white300,
+                                        hintText: "Quantity",
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                                          borderSide: BorderSide(
+                                            color: Colors.black12, style: BorderStyle.solid, width: 2),
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                                          borderSide: BorderSide(style: BorderStyle.none, width: 0),
+                                        ),
+                                      ),
+                                    )
 
 
                               ),
@@ -429,7 +428,6 @@ class _TransferFromCreateAssetReportScreenState extends State<TransferFromCreate
                                         imageList.add(ImageDetails(
                                             image: image,
                                             imagePath: image.path));
-                                        //  quantityController.text = dropDownAsset.quantity.toString();
                                       });
                                     }
                                   });

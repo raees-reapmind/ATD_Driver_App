@@ -97,6 +97,10 @@ class Routine {
   String? action;
    @HiveField(42)
   double? end_odometer;
+   @HiveField(43)
+  double? delieverdQuantity;
+
+  
 
 
   Routine({
@@ -128,7 +132,8 @@ class Routine {
     this.vehilcleId,
     this.vehicleNo,
     this.action,
-    this.end_odometer
+    this.end_odometer,
+    this.delieverdQuantity,
 
 
   });
@@ -156,6 +161,8 @@ class Routine {
         serviceTime: value['service_time'],
         quantity:
             value['quantity'] != null ? double.parse(value['quantity']) : null,
+        delieverdQuantity:
+            value['delivered_quantity'] != null ? double.parse(value['delivered_quantity']) : null,
         paymentMode: value['payment_mode'],
         date: value['order_date'],
         pricePerLitre: value['product_rate'],

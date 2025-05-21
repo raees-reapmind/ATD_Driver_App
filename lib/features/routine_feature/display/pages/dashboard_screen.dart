@@ -24,6 +24,9 @@ import '../../data/models/routine.dart';
 import '../widgets/routine_card_new.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:atd/features/login_feature/data/models/session_stage.dart';
+import '../../../login_feature/display/pages/login_screen.dart';
+
 
 final ValueNotifier<double> desiredDifference = ValueNotifier(0.0);
 
@@ -275,8 +278,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   routineProvider.routines[index].startTotalizerDuLeft =  totalizerDuLeftReading;
                   routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
                   routineProvider.routines[index].arrivedDatetime = DateTime.now();
-              // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-
                 
                   try {
                     await LocationService() .determinePosition().then((position) {
@@ -343,8 +344,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           routineProvider.routines[index].startTotalizerDuLeft = totalizerDuLeftReading;
                           routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
                           routineProvider.routines[index].arrivedDatetime = DateTime.now();
-              // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-
 
                           try {
                             await LocationService().determinePosition().then((position) {
@@ -599,7 +598,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 routineProvider.isRoutineEnd = true;
                 showSnackBar(context: context, message: 'Success');
                 clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
-                Navigator.of(context).pop();
+                logOutClickEvent(context, loginProvider);
+                // Navigator.of(context).pop();
                 
                 break;
             }
@@ -739,6 +739,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print('An error occurred: $error');
     }
   }
+
+   void logOutClickEvent(
+      BuildContext context, LoginProvider loginProvider) async {
+    await loginProvider
+        .changeSessionStage(sessionStage: SessionStage.logout)
+        .whenComplete(() {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+    });
+  }
+
 
   void deliveryArrivedClickEvent(
       BuildContext context,
@@ -954,3 +965,8 @@ Future<bool> checkAccuracy(double lat, double long) async {
     return true;
   }
 }
+
+
+ 
+
+

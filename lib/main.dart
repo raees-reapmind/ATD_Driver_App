@@ -8,7 +8,9 @@ import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_
 import 'package:atd/providers/stock_in_list_provider.dart';
 import 'package:atd/providers/stock_out_list_provider.dart';
 import 'package:atd/providers/stock_transfer_navigation_provider.dart';
+import 'package:atd/utils/network_checker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:atd/utils/utils_export.dart';
@@ -20,6 +22,7 @@ void main() async {
     await SharedPreferences.getInstance(); // Ensure it initializes correctly
 
   await DatabaseHelper().init();
+  // NetworkChecker().initialize(navigatorKey);
   //final BackgroundService backgroundService = BackgroundServiceImpl();
   //await backgroundService.init();
   // await BackgroundService().initializeService();
@@ -47,12 +50,18 @@ void main() async {
   );
 }
 
+
+
+// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    // return MaterialApp(
+    return GetMaterialApp(
+      // navigatorKey: navigatorKey,
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

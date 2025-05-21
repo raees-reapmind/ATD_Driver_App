@@ -3,6 +3,7 @@ import 'package:atd/core/errors/failures.dart';
 import 'package:atd/features/vehicle_readings_feature/data/datasources/vehicle_details_remote_data_source.dart';
 import 'package:atd/features/vehicle_readings_feature/data/models/vehicle_details.dart';
 import 'package:atd/features/vehicle_readings_feature/domain/repository/vehicle_details_repository.dart';
+import 'package:atd/utils/helper.dart';
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,8 @@ class VehicleReadingsProvider extends ChangeNotifier {
       message = data;
       notifyListeners();
       isSuccess = true;
+      //  updateUserStep(2);
+       debugPrint('updateUserStep: $updateUserStep');
     });
     return isSuccess;
   }

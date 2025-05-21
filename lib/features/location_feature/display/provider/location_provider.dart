@@ -64,9 +64,7 @@ Future<String> sendLocationToServer({required String apiToken,required RoutinesP
   final Dio dio = Dio();
 
   // VehicleDetails? vehicleDetails = VehicleManager().vehicleDetails;
-  // debugPrint('[loc-test] vehicleDetails id: ${vehicleDetails?.id}');
-
-
+  // debugPrint('[loc-test] vehicleDetails id: ${vehicleDetails?.id}'); 
 
   dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
   dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
@@ -76,6 +74,7 @@ Future<String> sendLocationToServer({required String apiToken,required RoutinesP
     "latitude": position.latitude,
     "longitude": position.longitude,
   };
+  
   debugPrint("[loc-test] Sending Location: $data");
   debugPrint("[loc-test] Sending Location URL : ${'$mainUrl/api/app/v2/vehicles/${routineProvider.vehicleDetails?.id}/locations'}");
 
