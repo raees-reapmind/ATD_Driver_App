@@ -44,7 +44,7 @@ void clearVehicleChecks() {
   Future<void> eitherFailureOrGetVehicleChecks({required String apiToken}) async {
     VehicleChecksRepositoryImpl repository = VehicleChecksRepositoryImpl(
       remoteDataSource: VehicleChecksRemoteDataSourceImpl(dio: Dio()),
-      localDataSource: VehicleChecksLocalDataSourceImpl(vehicleChecksBox: Hive.box('vehicle_checks_box_key')),
+      localDataSource: VehicleChecksLocalDataSourceImpl(vehicleChecksBox: Hive.box('vehicle_checks_box_key'),pendingChecksSyncBox: Hive.box('pending_vehicle_checks_box')),
       networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
     );
     final failureOrVehicleChecks =
@@ -64,18 +64,50 @@ void clearVehicleChecks() {
     });
   }
 
-  Future<bool> eitherFailureOrSetVehicleChecks(
-      {required String apiToken}) async {
-    VehicleChecksRepositoryImpl repository = VehicleChecksRepositoryImpl(
-      remoteDataSource: VehicleChecksRemoteDataSourceImpl(dio: Dio()),
-      localDataSource: VehicleChecksLocalDataSourceImpl(vehicleChecksBox: Hive.box('vehicle_checks_box_key')),
-      networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
-    );
-    bool isSuccess = false;
-    final result = await SetVehicleChecks(repository: repository).call(vehicleChecks: vehicleCheckList, apiToken: apiToken);
+  // Future<bool> eitherFailureOrSetVehicleChecks(
+  //     {required String apiToken}) async {
+  //   VehicleChecksRepositoryImpl repository = VehicleChecksRepositoryImpl(
+  //     remoteDataSource: VehicleChecksRemoteDataSourceImpl(dio: Dio()),
+  //     localDataSource: VehicleChecksLocalDataSourceImpl(vehicleChecksBox: Hive.box('vehicle_checks_box_key')),
+  //     networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+  //   );
+  //   bool isSuccess = false;
+  //   final result = await SetVehicleChecks(repository: repository).call(vehicleChecks: vehicleCheckList, apiToken: apiToken);
+  //   result?.fold((newFailure) {
+  //     message = newFailure.errorMessage;
+  //     failure = newFailure;
+  //     notifyListeners();
+  //     isSuccess = false;
+  //   }, (data) {
+      
+  //     failure = null;
+  //     message = data;
+  //     notifyListeners();
+  //     isSuccess = true;
+  //   });
+  //   return isSuccess;
+  // }
+
+  Future<bool> eitherFailureOrSetVehicleChecks({required String apiToken}) async {
+  VehicleChecksRepositoryImpl repository = VehicleChecksRepositoryImpl(
+    remoteDataSource: VehicleChecksRemoteDataSourceImpl(dio: Dio()),
+    localDataSource: VehicleChecksLocalDataSourceImpl(
+      vehicleChecksBox: Hive.box('vehicle_checks_box_key'),
+      pendingChecksSyncBox: Hive.box('pending_vehicle_checks_box'),
+    ),
+    networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+  );
+
+  bool isSuccess = false;
+
+  final isConnected = await repository.networkInfo.isConnected;
+
+  if (isConnected ==  true) {
+    final result = await SetVehicleChecks(repository: repository)
+        .call(vehicleChecks: vehicleCheckList, apiToken: apiToken);
     result?.fold((newFailure) {
-      message = newFailure.errorMessage;
       failure = newFailure;
+      message = newFailure.errorMessage;
       notifyListeners();
       isSuccess = false;
     }, (data) {
@@ -84,6 +116,15 @@ void clearVehicleChecks() {
       notifyListeners();
       isSuccess = true;
     });
-    return isSuccess;
+  } else {
+    await repository.localDataSource.savePendingVehicleChecks(vehicleCheckList ?? []);
+    failure = null;
+    message = 'Saved locally. Will sync when online.';
+    notifyListeners();
+    isSuccess = true;
   }
+
+  return isSuccess;
+}
+
 }

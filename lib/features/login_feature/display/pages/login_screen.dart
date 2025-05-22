@@ -11,6 +11,8 @@ import 'package:atd/features/login_feature/display/provider/login_provider.dart'
 import 'package:atd/features/routine_feature/display/pages/dashboard_screen.dart';
 import 'package:atd/features/vehicle_checks_feature/display/pages/vehicle_checks_screen.dart';
 import 'package:atd/features/vehicle_checks_feature/display/provider/vehicle_checks_provider.dart';
+import 'package:atd/utils/network_checker.dart';
+import 'package:atd/utils/sync_service.dart';
 import 'package:atd/utils/utils_export.dart';
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
@@ -266,8 +268,18 @@ class _LoginScreenState extends State<LoginScreen> {
       //331
 
       if (provider.userDetails?.step != null) {
+          if (provider.userDetails!.apiToken != null) {
+              // syncPendingVehicleChecks(provider.userDetails!.apiToken!); 
+              // syncPendingVehicleReadings(provider.userDetails!.apiToken!); 
+
+                NetworkChecker().setNavigatorKeyinitialize(provider.userDetails!.apiToken!);
+
+              
+          }// <-- Add it here
+            
 
           switch (provider.userDetails?.step) {
+            
             case 0: 
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const LoginDetailsScreen(),

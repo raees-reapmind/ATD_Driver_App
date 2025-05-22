@@ -26,13 +26,14 @@ class AssetAdapter extends TypeAdapter<Asset> {
       odometer: fields[8] as double?,
       receiptImage: fields[9] as int?,
       capacity: fields[6] as double?,
+      subjectType: fields[11] as String?,
     )..images = (fields[10] as List).cast<ImageDetails>();
   }
 
   @override
   void write(BinaryWriter writer, Asset obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(1)
       ..write(obj.id)
       ..writeByte(2)
@@ -52,7 +53,9 @@ class AssetAdapter extends TypeAdapter<Asset> {
       ..writeByte(9)
       ..write(obj.receiptImage)
       ..writeByte(10)
-      ..write(obj.images);
+      ..write(obj.images)
+      ..writeByte(11)
+      ..write(obj.subjectType);
   }
 
   @override

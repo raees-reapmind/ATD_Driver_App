@@ -91,13 +91,13 @@ class Routine {
   String? selectedDu;
    @HiveField(41)
   int? vehilcleId;
-   @HiveField(41)
-  String? vehicleNo;
-   @HiveField(41)
-  String? action;
    @HiveField(42)
-  double? end_odometer;
+  String? vehicleNo;
    @HiveField(43)
+  String? action;
+   @HiveField(44)
+  double? end_odometer;
+   @HiveField(45)
   double? delieverdQuantity;
 
   

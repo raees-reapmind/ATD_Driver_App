@@ -25,14 +25,13 @@ class _VehicleChecksScreenState extends State<VehicleChecksScreen> {
     super.initState();
 
        WidgetsBinding.instance.addPostFrameCallback((_) {
-      final routineProvider =
-          Provider.of<RoutinesProvider>(context, listen: false);
-      final loginProvider =
-          Provider.of<LoginProvider>(context, listen: false);
-      final vehicleDetailsProvider =
-          Provider.of<VehicleReadingsProvider>(context, listen: false);
+      final routineProvider = Provider.of<RoutinesProvider>(context, listen: false);
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      final vehicleDetailsProvider =  Provider.of<VehicleReadingsProvider>(context, listen: false);
+      final vehicleChecksProvider = Provider.of<VehicleChecksProvider>(context,listen: false); 
 
       getRoutineClickEvent(context, routineProvider, loginProvider, vehicleDetailsProvider);
+      getVehicleChecksClickEvent(context,loginProvider,vehicleChecksProvider);
     });
 
   }

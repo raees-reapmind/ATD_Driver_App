@@ -22,7 +22,8 @@ void main() async {
     await SharedPreferences.getInstance(); // Ensure it initializes correctly
 
   await DatabaseHelper().init();
-  // NetworkChecker().initialize(navigatorKey);
+  
+  NetworkChecker().setNavigatorKey(navigatorKey);
   //final BackgroundService backgroundService = BackgroundServiceImpl();
   //await backgroundService.init();
   // await BackgroundService().initializeService();
@@ -52,16 +53,19 @@ void main() async {
 
 
 
-// final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    
     // return MaterialApp(
     return GetMaterialApp(
-      // navigatorKey: navigatorKey,
+      navigatorKey: navigatorKey,
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

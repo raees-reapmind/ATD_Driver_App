@@ -21,10 +21,19 @@ class DatabaseHelper {
   late final Box _dispenserChecksBox;
   late final Box _routinesBox;
 
+  late final Box _pendingVehicleChecksBox;
+  // late final Box _offlineVehicleReadingsBox;
+
+
   Box get userDetailsBox => _userDetailsBox;
   Box get vehicleChecksBox => _vehicleChecksBox;
   Box get dispenserChecksBox => _dispenserChecksBox;
   Box get routinesBox => _routinesBox;
+
+  Box get pendingVehicleChecksBox => _pendingVehicleChecksBox;
+  // Box get offlineVehicleReadingsBox => _offlineVehicleReadingsBox;
+
+
 
   Future<void> init() async {
     try {
@@ -42,6 +51,8 @@ class DatabaseHelper {
     _vehicleChecksBox = await Hive.openBox(vehicleChecksBoxKey);
     _dispenserChecksBox = await Hive.openBox(dispenserChecksBoxKey);
     _routinesBox = await Hive.openBox(routinesBoxKey);
+    _pendingVehicleChecksBox = await Hive.openBox(pendingVehicleChecksBoxKey);
+    // _offlineVehicleReadingsBox = await Hive.openBox(vehicleReadingDetails);
   }
 
   Future<void> _closeBox() async {

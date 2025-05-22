@@ -22,13 +22,14 @@ class DispenserCheckAdapter extends TypeAdapter<DispenserCheck> {
       quantitySelected: fields[2] as double,
       quantityDispensed: fields[3] as double,
       imageList: (fields[4] as List?)?.cast<ImageDetails>(),
+      duReadings: fields[6] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DispenserCheck obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.dispensedFrom)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class DispenserCheckAdapter extends TypeAdapter<DispenserCheck> {
       ..writeByte(3)
       ..write(obj.quantityDispensed)
       ..writeByte(4)
-      ..write(obj.imageList);
+      ..write(obj.imageList)
+      ..writeByte(6)
+      ..write(obj.duReadings);
   }
 
   @override

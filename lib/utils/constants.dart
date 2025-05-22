@@ -47,6 +47,17 @@ const postTransferReportUrl = '$mainUrl/api/app/routines/internal-transfer';
 const postTransferFromReportUrl = '$mainUrl/api/app/routines/internal-transfer-from';
 const updateReachedAt = '$mainUrl/api/app/update-reached-at';
 
+
+
+const pendingVehicleChecksBoxKey = 'pending_vehicle_checks_box';
+const vehicleReadingDetails = 'offline_vehicle_readings';
+
+
+
+
+
+
+
 void showLoading() {
   if (Get.isDialogOpen == true) {
     //log("Show loading called ...");

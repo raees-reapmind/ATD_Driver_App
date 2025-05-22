@@ -31,7 +31,7 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       serviceTime: fields[12] as int?,
       quantity: fields[13] as double?,
       date: fields[15] as String?,
-      pricePerLitre: fields[16] as double?,
+      pricePerLitre: fields[16] as num?,
       price: fields[17] as double?,
       assetList: (fields[20] as List?)?.cast<Asset>(),
       paymentMode: fields[14] as String?,
@@ -40,6 +40,13 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       endDateTime: fields[24] as DateTime?,
       recieverName: fields[26] as String?,
       paymentCollected: fields[37] as bool?,
+      otp: fields[38] as bool?,
+      managerSignImage: fields[39] as String?,
+      vehilcleId: fields[41] as int?,
+      vehicleNo: fields[42] as String?,
+      action: fields[43] as String?,
+      end_odometer: fields[44] as double?,
+      delieverdQuantity: fields[45] as double?,
     )
       ..endQuantity = fields[18] as double
       ..assetsReport = (fields[21] as List).cast<Asset>()
@@ -53,13 +60,14 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       ..endTotalizerDuLeft = fields[32] as double?
       ..endTotalizerDuRight = fields[33] as double?
       ..additionalChargesList = (fields[35] as List?)?.cast<AdditionCharge>()
-      ..endPrice = fields[36] as double?;
+      ..endPrice = fields[36] as double?
+      ..selectedDu = fields[40] as String?;
   }
 
   @override
   void write(BinaryWriter writer, Routine obj) {
     writer
-      ..writeByte(36)
+      ..writeByte(44)
       ..writeByte(1)
       ..write(obj.id)
       ..writeByte(2)
@@ -131,7 +139,23 @@ class RoutineAdapter extends TypeAdapter<Routine> {
       ..writeByte(36)
       ..write(obj.endPrice)
       ..writeByte(37)
-      ..write(obj.paymentCollected);
+      ..write(obj.paymentCollected)
+      ..writeByte(38)
+      ..write(obj.otp)
+      ..writeByte(39)
+      ..write(obj.managerSignImage)
+      ..writeByte(40)
+      ..write(obj.selectedDu)
+      ..writeByte(41)
+      ..write(obj.vehilcleId)
+      ..writeByte(42)
+      ..write(obj.vehicleNo)
+      ..writeByte(43)
+      ..write(obj.action)
+      ..writeByte(44)
+      ..write(obj.end_odometer)
+      ..writeByte(45)
+      ..write(obj.delieverdQuantity);
   }
 
   @override

@@ -32,4 +32,24 @@ class VehicleCheck {
       'status': status,
     };
   }
+
+
+  factory VehicleCheck.fromJson(Map<String, dynamic> json) {
+    return VehicleCheck(
+      id: json['id'],
+      name: json['name'],
+      status: json['status'],
+    );
+  }
+
+  // Add this:
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'status': status,
+    };
+  }
+
+  
 }

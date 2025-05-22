@@ -23,13 +23,14 @@ class UserDetailsAdapter extends TypeAdapter<UserDetails> {
       apiToken: fields[4] as String?,
       otp: fields[2] as String?,
       deviceName: fields[5] as String?,
+      step: fields[7] as int?,
     )..sessionStage = fields[6] as SessionStage;
   }
 
   @override
   void write(BinaryWriter writer, UserDetails obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.phoneNo)
       ..writeByte(1)
@@ -43,7 +44,9 @@ class UserDetailsAdapter extends TypeAdapter<UserDetails> {
       ..writeByte(5)
       ..write(obj.deviceName)
       ..writeByte(6)
-      ..write(obj.sessionStage);
+      ..write(obj.sessionStage)
+      ..writeByte(7)
+      ..write(obj.step);
   }
 
   @override
