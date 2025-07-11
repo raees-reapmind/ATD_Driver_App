@@ -102,12 +102,12 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
     if (response.statusCode == 200 || response.statusCode == 422) {
       Map<String, dynamic> map = (response.data);
       debugPrint(map.toString());
+
       final result = map['result'];
       String apiToken = result['token'];
-
-
-      final id = map['vehicle_id']; // e.g., '1'
       final step = map['step']; // e.g., '1'
+      final userId = map['user_id']; // e.g., '1'
+      final vehicleId = map['vehicle_id']; // e.g., '1'
 
       return UserDetails(
         phoneNo: userDetails.phoneNo,
@@ -115,7 +115,9 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
         dateTime: DateTime.now(),
         apiToken: apiToken,
         otp: userDetails.otp,
-        step: step
+        step: step,
+        userId: userId,
+        vehicleId: vehicleId,
       );
     } else {
       throw ServerException();

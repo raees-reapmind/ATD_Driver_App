@@ -1,3 +1,4 @@
+import 'package:atd/features/login_feature/data/models/user_details.dart';
 import 'package:atd/features/routine_feature/data/models/du_response_data.dart';
 import 'package:atd/features/routine_feature/data/models/routine_details.dart';
 import 'package:dartz/dartz.dart';
@@ -30,6 +31,17 @@ abstract class RoutineRepository {
 
   Future<Either<Failure, String?>>? postEndRoutine(
       {required Routine routine, required String apiToken});
+ 
+   Future<Either<Failure, String?>>? storeVehicleLocationEnd({
+    required int vehicleId,
+    required int driverId,
+    required double lat,
+    required double long,
+    required String address,
+    required String reachedAt, // Format: "yyyy-MM-dd HH:mm:ss"
+    required String date, // Format: "yyyy-MM-dd"
+    required String apiToken,
+  });
 
   Future<Either<Failure, String?>>? postDeliveryReport(
       {required Routine routine, required String apiToken});

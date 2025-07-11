@@ -1,5 +1,6 @@
 import 'package:atd/core/database/database_helper.dart';
 import 'package:atd/features/image_upload_feature/display/providers/image_upload_provider.dart';
+import 'package:atd/features/login_feature/data/models/user_details.dart';
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
 import 'package:atd/features/routine_feature/data/datasources/routine_remote_data_source.dart';
 import 'package:atd/features/routine_feature/data/models/du_response_data.dart';
@@ -11,11 +12,14 @@ import 'package:atd/features/routine_feature/domain/usecases/get_routines.dart';
 import 'package:atd/features/routine_feature/domain/usecases/post_delivery_report.dart';
 import 'package:atd/features/routine_feature/domain/usecases/post_end_routine.dart';
 import 'package:atd/features/routine_feature/domain/usecases/post_refill_report.dart';
+import 'package:atd/features/routine_feature/domain/usecases/store_vehicle_end_location.dart';
 import 'package:atd/utils/helper.dart';
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../vehicle_readings_feature/data/models/image_details.dart';
@@ -28,6 +32,7 @@ import '../../domain/usecases/post_start_routine.dart';
 import '../../domain/usecases/update_reached_at.dart';
 import '../../domain/usecases/post_transfer_from_report.dart';
 import '../../domain/usecases/post_transfer_report.dart';
+import 'package:geocoding/geocoding.dart';
 
 
 enum Result {
@@ -56,6 +61,7 @@ class RoutinesProvider extends ChangeNotifier {
   List<Routine> routines = [];
   ProductDetails? productDetails;
   PlanDetails? planDetails;
+  UserDetails? userDetails;
   VehicleDetails? vehicleDetails;
   Failure? failure;
   String? message;
@@ -293,7 +299,7 @@ class RoutinesProvider extends ChangeNotifier {
     }
     routines[index].imageList = imageList;
     return eitherFailureOrPostEndRoutine(
-            apiToken: loginProvider.userDetails!.apiToken!, index: index)
+            apiToken: loginProvider.userDetails!.apiToken!, index: index, userId: loginProvider.userDetails?.userId ?? 0, vehicleId: loginProvider.userDetails?.vehicleId ?? 0)
         .then((success) {
       if (success) {
         return Response.success;
@@ -302,6 +308,8 @@ class RoutinesProvider extends ChangeNotifier {
       }
     });
   }
+
+
  Future<Response> duStatusResponse({
     required int index,
     required LoginProvider loginProvider,
@@ -331,7 +339,7 @@ class RoutinesProvider extends ChangeNotifier {
     }
     routines[index].imageList = imageList;
     return eitherFailureOrPostEndRoutine(
-            apiToken: loginProvider.userDetails!.apiToken!, index: index)
+            apiToken: loginProvider.userDetails!.apiToken!, index: index, userId: loginProvider.userDetails!.userId ?? 0, vehicleId: loginProvider.userDetails?.vehicleId?? 0)
         .then((success) {
       if (success) {
         return Response.success;
@@ -430,32 +438,94 @@ class RoutinesProvider extends ChangeNotifier {
     return isSuccess;
   }
 
-  Future<bool> eitherFailureOrPostEndRoutine(
-      {required String apiToken, required int index}) async {
-    RoutineRepositoryImpl repository = RoutineRepositoryImpl(
-      remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
-      localDataSource:
-          RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
-      networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
-    );
-    bool isSuccess = true;
-    final result = await PostEndRoutine(repository: repository)
-        .call(apiToken: apiToken, routine: routines[index]);
-    result?.fold((newFailure) {
-      message = newFailure.errorMessage;
-      debugPrint(message.toString());
-      failure = newFailure;
-      isSuccess = false;
-      notifyListeners();
-    }, (data) {
-      failure = null;
+
+Future<bool> eitherFailureOrPostEndRoutine({
+  required String apiToken,
+  required int userId,
+  required int vehicleId,
+  required int index,
+}) async {
+  RoutineRepositoryImpl repository = RoutineRepositoryImpl(
+    remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
+    localDataSource:
+        RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
+    networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
+  );
+
+  bool isSuccess = true;
+
+  final result = await PostEndRoutine(repository: repository)
+      .call(apiToken: apiToken, routine: routines[index]);
+
+  await result?.fold((newFailure) {
+    message = newFailure.errorMessage;
+    debugPrint('[postEndRoutine] Error: $message');
+    failure = newFailure;
+    isSuccess = false;
+    notifyListeners();
+  },  (data) async {
+      // ✅ PostEndRoutine successful
       message = data;
-      debugPrint(message.toString());
-      isSuccess = true;
+      failure = null;
       notifyListeners();
-    });
-    return isSuccess;
-  }
+
+      try {
+        // ✅ Get current location
+         final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+
+        // ✅ Format date and time
+        final now = DateTime.now();
+        final String reachedAt = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+        final String date = DateFormat('yyyy-MM-dd').format(now);
+
+        // ✅ (Optional) Get address using placemark
+        final placemarks = await placemarkFromCoordinates(
+            position.latitude, position.longitude);
+        final address =
+            "${placemarks.first.street ?? ''}, ${placemarks.first.locality ?? ''}";
+
+        // ✅ Call store vehicle end location API
+        final locationResult = await StoreVehicleEndLocation(repository: repository).call(
+          vehicleId: vehicleId ?? 0,
+          driverId: userId ?? 0,
+          lat: position.latitude,
+          long: position.longitude,
+          address: address,
+          reachedAt: reachedAt,
+          date: date,
+          apiToken: apiToken,
+        );
+
+        locationResult?.fold(
+          (locationFailure) {
+            message = locationFailure.errorMessage;
+            debugPrint('[locationEnd] Error: $message');
+            failure = locationFailure;
+            isSuccess = false;
+            notifyListeners();
+          },
+          (locationSuccess) {
+            debugPrint('[locationEnd] Success: $locationSuccess');
+            failure = null;
+            notifyListeners();
+          },
+        );
+      } catch (e) {
+        message = 'Failed to fetch location: $e';
+        debugPrint('[locationEnd] Exception: $message');
+        failure = ServerFailure(errorMessage: message);
+        isSuccess = false;
+        notifyListeners();
+      }
+    },
+  );
+        // ✅ Get current location
+      
+  return isSuccess;
+}
+
 
   Future<bool> eitherFailureOrPostRefillReport(
       {required String apiToken, required Routine routine}) async {
