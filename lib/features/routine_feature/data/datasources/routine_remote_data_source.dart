@@ -357,11 +357,10 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
 
     debugPrint(responseMap.toString());
 
-    if (response.statusCode == 200) {
-      debugPrint(responseMap.toString());
-
-      return responseMap['message'];
-    } else {
+   if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
+    return responseMap['message'];
+    }
+  else {
       throw ServerException(
           message:
               '[${response.statusCode}] ${responseMap['message'].toString()}');
