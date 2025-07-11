@@ -48,11 +48,9 @@ class RoutineCard extends StatelessWidget {
                     children: [
                       const Text("Order"),
                       Text(
-                        routine.status == 'Completed' 
-                        ?
-                        "${routine.delieverdQuantity} L"
-                        :
-                        "${routine.quantity} L",
+                        routine.status == 'Completed'
+                            ? "${routine.delieverdQuantity} L"
+                            : "${routine.quantity} L",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -256,10 +254,10 @@ class RoutineCard extends StatelessWidget {
             child: Column(
               children: [
                 const Padding(
-                  padding:  EdgeInsets.only(left: 8, right: 8),
+                  padding: EdgeInsets.only(left: 8, right: 8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children:  [
+                    children: [
                       Text("End Trip"),
                       Text(
                         "Great Work !",
@@ -293,11 +291,10 @@ class RoutineCard extends StatelessWidget {
                         const SizedBox(height: 10),
                         Visibility(
                           visible:
-                          //  routine.statusCode == 2 
-                          //  && 
-                           isRoutineEnd == false,
-                          child:
-                           Row(
+                              //  routine.statusCode == 2
+                              //  &&
+                              isRoutineEnd == false,
+                          child: Row(
                             children: [
                               // Expanded(
                               //   child: CustomButton(
@@ -313,7 +310,7 @@ class RoutineCard extends StatelessWidget {
                               Expanded(
                                 child: CustomButton(
                                   title: "End",
-                                  onTap: () =>  onTapArrived(),
+                                  onTap: () => onTapArrived(),
                                   isSmall: true,
                                   textColor: Colors.white,
                                   backgroundColor: red500,
@@ -348,7 +345,6 @@ class RoutineCard extends StatelessWidget {
             ),
           ),
         );
-
 
       case 'start':
         return Container(
@@ -564,7 +560,7 @@ class RoutineCard extends StatelessWidget {
           ),
         );
 
-        case 'internal_transfer_from':
+      case 'internal_transfer_from':
         return Container(
           margin: const EdgeInsets.only(bottom: 8),
           width: double.maxFinite,

@@ -19,7 +19,7 @@ import 'utils/widgets/provider_export.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    await SharedPreferences.getInstance(); // Ensure it initializes correctly
+  await SharedPreferences.getInstance(); // Ensure it initializes correctly
 
   await DatabaseHelper().init();
   // NetworkChecker().initialize(navigatorKey);
@@ -49,8 +49,6 @@ void main() async {
     ),
   );
 }
-
-
 
 // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

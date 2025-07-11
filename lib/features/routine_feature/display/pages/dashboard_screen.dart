@@ -27,7 +27,6 @@ import 'dart:convert';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import '../../../login_feature/display/pages/login_screen.dart';
 
-
 final ValueNotifier<double> desiredDifference = ValueNotifier(0.0);
 
 class DashboardScreen extends StatefulWidget {
@@ -39,17 +38,21 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final TextEditingController odometerController = TextEditingController();
-  final TextEditingController totalizerDuLeftController = TextEditingController();
-  final TextEditingController totalizerDuRightController = TextEditingController();
+  final TextEditingController totalizerDuLeftController =
+      TextEditingController();
+  final TextEditingController totalizerDuRightController =
+      TextEditingController();
   XFile? image;
   int count = 0;
 
   @override
   void initState() {
-     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final routineProvider = Provider.of<RoutinesProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final routineProvider =
+          Provider.of<RoutinesProvider>(context, listen: false);
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      routineProvider.eitherFailureOrGetRoutines(apiToken: loginProvider.userDetails!.apiToken!);
+      routineProvider.eitherFailureOrGetRoutines(
+          apiToken: loginProvider.userDetails!.apiToken!);
     });
     super.initState();
   }
@@ -59,7 +62,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final routineProvider = Provider.of<RoutinesProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-    final vehicleReadingsProvider = Provider.of<VehicleReadingsProvider>(context);
+    final vehicleReadingsProvider =
+        Provider.of<VehicleReadingsProvider>(context);
 
     return Scaffold(
       body: Stack(
@@ -96,22 +100,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 itemCount: routineProvider.routines.length,
                                 itemBuilder: ((context, index) {
                                   return RoutineCard(
-                                      routine: routineProvider.routines[index],
-                                      onTapArrived: () => arrivedClickEvent(
-                                          context,
-                                          routineProvider.routines[index],
-                                          index,
-                                          routineProvider,
-                                          loginProvider,
-                                          imageUploadProvider,
-                                          vehicleReadingsProvider),
-                                      onTapCancel: () {},
-                                      onTapNavigate: () => openMapEvent(
-                                          lat: routineProvider.routines[index].latitude,
-                                          lng: routineProvider.routines[index].longitude),
-                                      isRoutineEnd: routineProvider.isRoutineEnd,
-
-                                      );
+                                    routine: routineProvider.routines[index],
+                                    onTapArrived: () => arrivedClickEvent(
+                                        context,
+                                        routineProvider.routines[index],
+                                        index,
+                                        routineProvider,
+                                        loginProvider,
+                                        imageUploadProvider,
+                                        vehicleReadingsProvider),
+                                    onTapCancel: () {},
+                                    onTapNavigate: () => openMapEvent(
+                                        lat: routineProvider
+                                            .routines[index].latitude,
+                                        lng: routineProvider
+                                            .routines[index].longitude),
+                                    isRoutineEnd: routineProvider.isRoutineEnd,
+                                  );
                                 }),
                               ),
                             ),
@@ -142,37 +147,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // /* await vehicleReadingsProvider
     //     .eitherFailureOrGetVehicleDetails(
     //         apiToken: loginProvider.userDetails!.apiToken!)
-      //   .then((isSuccess) {
-      // if (isSuccess) {
-      //   odometerController.text =
-      //       vehicleReadingsProvider.vehicleReadings!.remoteOdometer.toString();
-        /* totalizerDuLeftController.text = vehicleReadingsProvider
+    //   .then((isSuccess) {
+    // if (isSuccess) {
+    //   odometerController.text =
+    //       vehicleReadingsProvider.vehicleReadings!.remoteOdometer.toString();
+    /* totalizerDuLeftController.text = vehicleReadingsProvider
             .vehicleReadings!.remoteTotalizeDuLeft
             .toString();
         totalizerDuRightController.text = vehicleReadingsProvider
             .vehicleReadings!.remoteTotalizeDuRight
-            .toString(); */ 
-              //  stopLocationUpdates();
-
+            .toString(); */
+    //  stopLocationUpdates();
 
     switch (routine.type) {
       case "delivery":
-        deliveryArrivedClickEvent(context, routine, index, routineProvider, loginProvider);
+        deliveryArrivedClickEvent(
+            context, routine, index, routineProvider, loginProvider);
         break;
       case "refill":
-        refillArrivedClickEvent( context, routine, index, routineProvider, loginProvider);
+        refillArrivedClickEvent(
+            context, routine, index, routineProvider, loginProvider);
         break;
       case "start":
-        startArrivedClickEvent(context, routine, index, routineProvider, loginProvider);
+        startArrivedClickEvent(
+            context, routine, index, routineProvider, loginProvider);
         break;
       case "end":
-        endArrivedClickEvent(context, routine, index, routineProvider, loginProvider, imageUploadProvider);
-       break;
+        endArrivedClickEvent(context, routine, index, routineProvider,
+            loginProvider, imageUploadProvider);
+        break;
       case "internal_transfer_to":
-        transferArrivedClickEvent(context, routine, index, routineProvider, loginProvider);
+        transferArrivedClickEvent(
+            context, routine, index, routineProvider, loginProvider);
         break;
       case "internal_transfer_from":
-        transferFromArriverdClickEvent(context, routine, index, routineProvider, loginProvider);
+        transferFromArriverdClickEvent(
+            context, routine, index, routineProvider, loginProvider);
         break;
     }
   }
@@ -201,24 +211,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
         isTotalizer: true,
         totalizerDuLeftController: totalizerDuLeftController,
         totalizerDuRightController: totalizerDuRightController,
-
-        onTapSave: () async {   
+        onTapSave: () async {
           if (odometerController.text.isNotEmpty) {
-            routineProvider.routines[index].odometerReading = double.tryParse(odometerController.text.toString());
-            routineProvider.routines[index].startTotalizerDuLeft = double.tryParse(totalizerDuLeftController.text.toString());
-            routineProvider.routines[index].startTotalizerDuRight = double.tryParse(totalizerDuRightController.text.toString());
+            routineProvider.routines[index].odometerReading =
+                double.tryParse(odometerController.text.toString());
+            routineProvider.routines[index].startTotalizerDuLeft =
+                double.tryParse(totalizerDuLeftController.text.toString());
+            routineProvider.routines[index].startTotalizerDuRight =
+                double.tryParse(totalizerDuRightController.text.toString());
 
-            print('[data-test] startArrivedClickEvent Odometer: ${odometerController.text} DU Left: ${totalizerDuLeftController.text} DU Right: ${totalizerDuRightController.text}');
+            print(
+                '[data-test] startArrivedClickEvent Odometer: ${odometerController.text} DU Left: ${totalizerDuLeftController.text} DU Right: ${totalizerDuRightController.text}');
 
-            await routineProvider.eitherFailureOrPostStartRoutine(
+            await routineProvider
+                .eitherFailureOrPostStartRoutine(
                     apiToken: loginProvider.userDetails!.apiToken!,
                     routine: routineProvider.routines[index])
                 .then((isSuccess) {
-
               if (isSuccess) {
                 startLocationUpdates(loginProvider, routineProvider);
-               clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
-                routineProvider.eitherFailureOrGetRoutines(
+                clearTextFields([
+                  odometerController,
+                  totalizerDuLeftController,
+                  totalizerDuRightController
+                ]);
+                routineProvider
+                    .eitherFailureOrGetRoutines(
                         apiToken: loginProvider.userDetails!.apiToken!)
                     .whenComplete(() => Navigator.of(context).pop());
               } else {
@@ -230,17 +248,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
           }
         },
         onTapCancel: () {
-          clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+          clearTextFields([
+            odometerController,
+            totalizerDuLeftController,
+            totalizerDuRightController
+          ]);
           Navigator.of(context).pop();
         },
       ),
     );
   }
 
-  void transferArrivedClickEvent(BuildContext context, Routine routine, int index, RoutinesProvider routineProvider, LoginProvider loginProvider) async{
-      print('[trip-test] transferArrivedClickEvent called---');
+  void transferArrivedClickEvent(
+      BuildContext context,
+      Routine routine,
+      int index,
+      RoutinesProvider routineProvider,
+      LoginProvider loginProvider) async {
+    print('[trip-test] transferArrivedClickEvent called---');
 
-      showLoading();
+    showLoading();
     // await checkTOT(1, totalizerDuLeftController);
     // await checkTOT(2, totalizerDuRightController);
 
@@ -269,27 +296,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
               totalizerDuLeftController: totalizerDuLeftController,
               totalizerDuRightController: totalizerDuRightController,
               onTapSave: () async {
-                final odometerReading = double.tryParse(odometerController.text.toString());
-                final totalizerDuLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
-                final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
-                if (odometerReading != null && totalizerDuLeftReading != null && totalizerDuRightReading != null) 
-                {
-                  routineProvider.routines[index].odometerReading =  odometerReading;
-                  routineProvider.routines[index].startTotalizerDuLeft =  totalizerDuLeftReading;
-                  routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
-                  routineProvider.routines[index].arrivedDatetime = DateTime.now();
-                
+                final odometerReading =
+                    double.tryParse(odometerController.text.toString());
+                final totalizerDuLeftReading =
+                    double.tryParse(totalizerDuLeftController.text.toString());
+                final totalizerDuRightReading =
+                    double.tryParse(totalizerDuRightController.text.toString());
+                if (odometerReading != null &&
+                    totalizerDuLeftReading != null &&
+                    totalizerDuRightReading != null) {
+                  routineProvider.routines[index].odometerReading =
+                      odometerReading;
+                  routineProvider.routines[index].startTotalizerDuLeft =
+                      totalizerDuLeftReading;
+                  routineProvider.routines[index].startTotalizerDuRight =
+                      totalizerDuRightReading;
+                  routineProvider.routines[index].arrivedDatetime =
+                      DateTime.now();
+
                   try {
-                    await LocationService() .determinePosition().then((position) {
-                      routineProvider.routines[index].endLatitude = position.latitude;
-                      routineProvider.routines[index].endLongitude = position.longitude;
+                    await LocationService()
+                        .determinePosition()
+                        .then((position) {
+                      routineProvider.routines[index].endLatitude =
+                          position.latitude;
+                      routineProvider.routines[index].endLongitude =
+                          position.longitude;
                       routineProvider.notifyDataChange();
                       stopLocationUpdates();
-                        print('[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
+                      print(
+                          '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
-                        Navigator.of(context).push(MaterialPageRoute(builder: ((context) => TransferScreen(index: index,))));
-                        clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
-
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => TransferScreen(
+                                index: index,
+                              ))));
+                      clearTextFields([
+                        odometerController,
+                        totalizerDuLeftController,
+                        totalizerDuRightController
+                      ]);
                     });
                   } catch (e) {
                     // ignore: use_build_context_synchronously
@@ -299,7 +345,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               onTapCancel: () {
                 Navigator.of(context).pop();
-                clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                clearTextFields([
+                  odometerController,
+                  totalizerDuLeftController,
+                  totalizerDuRightController
+                ]);
               },
             );
           },
@@ -333,30 +383,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       totalizerDuLeftController: totalizerDuLeftController,
                       totalizerDuRightController: totalizerDuRightController,
                       onTapSave: () async {
+                        final odometerReading =
+                            double.tryParse(odometerController.text.toString());
+                        final totalizerDuLeftReading = double.tryParse(
+                            totalizerDuLeftController.text.toString());
+                        final totalizerDuRightReading = double.tryParse(
+                            totalizerDuRightController.text.toString());
 
-                        final odometerReading = double.tryParse(odometerController.text.toString());
-                        final totalizerDuLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
-                        final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
-
-                        if (odometerReading != null && totalizerDuLeftReading != null && totalizerDuRightReading != null) {
-
-                          routineProvider.routines[index].odometerReading = odometerReading;
-                          routineProvider.routines[index].startTotalizerDuLeft = totalizerDuLeftReading;
-                          routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
-                          routineProvider.routines[index].arrivedDatetime = DateTime.now();
+                        if (odometerReading != null &&
+                            totalizerDuLeftReading != null &&
+                            totalizerDuRightReading != null) {
+                          routineProvider.routines[index].odometerReading =
+                              odometerReading;
+                          routineProvider.routines[index].startTotalizerDuLeft =
+                              totalizerDuLeftReading;
+                          routineProvider.routines[index]
+                              .startTotalizerDuRight = totalizerDuRightReading;
+                          routineProvider.routines[index].arrivedDatetime =
+                              DateTime.now();
 
                           try {
-                            await LocationService().determinePosition().then((position) {
-                              routineProvider.routines[index].endLatitude = position.latitude;
-                              routineProvider.routines[index].endLongitude = position.longitude;
+                            await LocationService()
+                                .determinePosition()
+                                .then((position) {
+                              routineProvider.routines[index].endLatitude =
+                                  position.latitude;
+                              routineProvider.routines[index].endLongitude =
+                                  position.longitude;
                               routineProvider.notifyDataChange();
                               stopLocationUpdates();
-                              print('[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
+                              print(
+                                  '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
-                              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => TransferScreen(index: index,))));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => TransferScreen(
+                                        index: index,
+                                      ))));
                               // Navigator.of(context).pop();
-                              clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
-
+                              clearTextFields([
+                                odometerController,
+                                totalizerDuLeftController,
+                                totalizerDuRightController
+                              ]);
                             });
                           } catch (e) {
                             // ignore: use_build_context_synchronously
@@ -367,7 +435,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       },
                       onTapCancel: () {
                         Navigator.of(context).pop();
-                        clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                        clearTextFields([
+                          odometerController,
+                          totalizerDuLeftController,
+                          totalizerDuRightController
+                        ]);
                       },
                     );
                   },
@@ -375,20 +447,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               onTapCancel: () {
                 Navigator.of(context).pop();
-                clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                clearTextFields([
+                  odometerController,
+                  totalizerDuLeftController,
+                  totalizerDuRightController
+                ]);
               },
             );
           });
     }
   }
 
+  void transferFromArriverdClickEvent(
+      BuildContext context,
+      Routine routine,
+      int index,
+      RoutinesProvider routineProvider,
+      LoginProvider loginProvider) async {
+    print('[trip-test] transferFromArriverdClickEvent called---');
 
-
-  void transferFromArriverdClickEvent(BuildContext context, Routine routine, int index, RoutinesProvider routineProvider, LoginProvider loginProvider) async {
-
-      print('[trip-test] transferFromArriverdClickEvent called---');
-
-      showLoading();
+    showLoading();
     // await checkTOT(1, totalizerDuLeftController);
     // await checkTOT(2, totalizerDuRightController);
 
@@ -405,142 +483,164 @@ class _DashboardScreenState extends State<DashboardScreen> {
       hideLoading();
       if (isWithinAccuracy) {
         if (routineProvider.planDetails?.id == 1) {
+          // ignore: use_build_context_synchronously
+          showDialog(
+            context: context,
+            builder: (context) {
+              return CustomAlertDialog(
+                title: 'Start Details',
+                isOdometer: true,
+                odometerController: odometerController,
+                onTapSave: () async {
+                  Navigator.of(context).pop();
+
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CustomAlertDialog(
+                        title: 'Start Details',
+                        isOdometer: true,
+                        odometerController: odometerController,
+                        onTapSave: () async {
+                          final odometerReading = double.tryParse(
+                              odometerController.text.toString());
+
+                          if (odometerReading != null) {
+                            routineProvider.routines[index].odometerReading =
+                                odometerReading;
+                            routineProvider.routines[index].arrivedDatetime =
+                                DateTime.now();
+
+                            try {
+                              await LocationService()
+                                  .determinePosition()
+                                  .then((position) {
+                                routineProvider.routines[index].endLatitude =
+                                    position.latitude;
+                                routineProvider.routines[index].endLongitude =
+                                    position.longitude;
+                                routineProvider.notifyDataChange();
+                                stopLocationUpdates();
+                                print(
+                                    '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
+
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: ((context) => TransferFromScreen(
+                                          index: index,
+                                        ))));
+                                // Navigator.of(context).pop();
+                                clearTextFields([odometerController]);
+                              });
+                            } catch (e) {
+                              // ignore: use_build_context_synchronously
+                              showSnackBar(
+                                  context: context, message: e.toString());
+                            }
+                          }
+                        },
+                        onTapCancel: () {
+                          Navigator.of(context).pop();
+                          clearTextFields([odometerController]);
+                        },
+                      );
+                    },
+                  );
+                },
+                onTapCancel: () {
+                  Navigator.of(context).pop();
+                  clearTextFields([
+                    odometerController,
+                    totalizerDuLeftController,
+                    totalizerDuRightController
+                  ]);
+                },
+              );
+            },
+          );
+
+          // Navigator.of(context).pop();
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: ((context) => TransferFromScreen(
+                    index: index,
+                  ))));
+        } else {
+          hideLoading();
+          _showOutOfRangePopup();
+          setState(() {
+            count++;
+          });
+        }
+      } else {
         // ignore: use_build_context_synchronously
         showDialog(
-          context: context,
-          builder: (context) {
-            return CustomAlertDialog(
-              title: 'Start Details',
-              isOdometer: true,
-              odometerController: odometerController,
-              onTapSave: () async {
-                Navigator.of(context).pop();
+            context: context,
+            builder: (context) {
+              return CustomAlertDialog(
+                title:
+                    'You have not reached delivery location. Do you want to proceed with delivery?',
+                onTapSave: () async {
+                  Navigator.of(context).pop();
 
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CustomAlertDialog(
-                      title: 'Start Details',
-                      isOdometer: true,
-                      odometerController: odometerController,
-                      onTapSave: () async {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CustomAlertDialog(
+                        title: 'Start Details',
+                        isOdometer: true,
+                        odometerController: odometerController,
+                        onTapSave: () async {
+                          final odometerReading = double.tryParse(
+                              odometerController.text.toString());
 
-                        final odometerReading = double.tryParse(odometerController.text.toString());
+                          if (odometerReading != null) {
+                            routineProvider.routines[index].odometerReading =
+                                odometerReading;
+                            routineProvider.routines[index].arrivedDatetime =
+                                DateTime.now();
+                            // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
 
-                        if (odometerReading != null) {
+                            try {
+                              await LocationService()
+                                  .determinePosition()
+                                  .then((position) {
+                                routineProvider.routines[index].endLatitude =
+                                    position.latitude;
+                                routineProvider.routines[index].endLongitude =
+                                    position.longitude;
+                                routineProvider.notifyDataChange();
+                                stopLocationUpdates();
+                                print(
+                                    '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
-                          routineProvider.routines[index].odometerReading = odometerReading;
-                          routineProvider.routines[index].arrivedDatetime = DateTime.now();
-
-                          try {
-                            await LocationService().determinePosition().then((position) {
-                              routineProvider.routines[index].endLatitude = position.latitude;
-                              routineProvider.routines[index].endLongitude = position.longitude;
-                              routineProvider.notifyDataChange();
-                              stopLocationUpdates();
-                              print('[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
-
-                              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => TransferFromScreen(index: index,))));
-                              // Navigator.of(context).pop();
-                              clearTextFields([odometerController]);
-
-                            });
-                          } catch (e) {
-                            // ignore: use_build_context_synchronously
-                            showSnackBar(
-                                context: context, message: e.toString());
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: ((context) => TransferFromScreen(
+                                          index: index,
+                                        ))));
+                                clearTextFields([odometerController]);
+                              });
+                            } catch (e) {
+                              // ignore: use_build_context_synchronously
+                              showSnackBar(
+                                  context: context, message: e.toString());
+                            }
                           }
-                        }
-                      },
-                      onTapCancel: () {
-                        Navigator.of(context).pop();
-                        clearTextFields([odometerController]);
-                      },
-                    );
-                  },
-                );
-              },
-              onTapCancel: () {
-                Navigator.of(context).pop();
-                clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
-              },
-            );
-          },
-        );
-
-        // Navigator.of(context).pop();
-        Navigator.of(context).push(MaterialPageRoute(builder: ((context) => TransferFromScreen(index: index,))));
-      } else {
-        hideLoading();
-        _showOutOfRangePopup();
-        setState(() {
-          count++;
-        });
+                        },
+                        onTapCancel: () {
+                          Navigator.of(context).pop();
+                          clearTextFields([odometerController]);
+                        },
+                      );
+                    },
+                  );
+                },
+                onTapCancel: () {
+                  Navigator.of(context).pop();
+                  clearTextFields([odometerController]);
+                },
+              );
+            });
       }
-    } else {
-      // ignore: use_build_context_synchronously
-      showDialog(
-          context: context,
-          builder: (context) {
-            return CustomAlertDialog(
-              title:
-                  'You have not reached delivery location. Do you want to proceed with delivery?',
-              onTapSave: () async {
-                Navigator.of(context).pop();
-
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return CustomAlertDialog(
-                      title: 'Start Details',
-                      isOdometer: true,
-                      odometerController: odometerController,
-                      onTapSave: () async {
-
-                        final odometerReading = double.tryParse(odometerController.text.toString());
-
-                        if (odometerReading != null) {
-
-                          routineProvider.routines[index].odometerReading = odometerReading;
-                          routineProvider.routines[index].arrivedDatetime = DateTime.now();
-              // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-
-
-                          try {
-                            await LocationService().determinePosition().then((position) {
-                              routineProvider.routines[index].endLatitude = position.latitude;
-                              routineProvider.routines[index].endLongitude = position.longitude;
-                              routineProvider.notifyDataChange();
-                              stopLocationUpdates();
-                              print('[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
-
-                              Navigator.of(context).push(MaterialPageRoute(builder: ((context) => TransferFromScreen(index: index,))));
-                              clearTextFields([odometerController]);
-
-                            });
-                          } catch (e) {
-                            // ignore: use_build_context_synchronously
-                            showSnackBar(
-                                context: context, message: e.toString());
-                          }
-                        }
-                      },
-                      onTapCancel: () {
-                        Navigator.of(context).pop();
-                        clearTextFields([odometerController]);
-                      },
-                    );
-                  },
-                );
-              },
-              onTapCancel: () {
-                Navigator.of(context).pop();
-                clearTextFields([odometerController]);
-              },
-            );
-          });
     }
-  }
   }
 
   void endArrivedClickEvent(
@@ -550,7 +650,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       RoutinesProvider routineProvider,
       LoginProvider loginProvider,
       ImageUploadProvider imageUploadProvider) {
-        
     print('[click-test] endArrivedClickEvent');
 
     List<ImageDetails> imageList = [];
@@ -570,16 +669,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         odometerController: odometerController,
         onTapSave: () async {
-          routineProvider.submitEndRoutine(
+          routineProvider
+              .submitEndRoutine(
             index: index,
             loginProvider: loginProvider,
             imageUploadProvider: imageUploadProvider,
             imageList: imageList,
-            odometerReading: double.tryParse(odometerController.text.toString()),
-            totalizerDuLeft: double.tryParse(totalizerDuLeftController.text.toString()),
-            totalizerDuRight: double.tryParse(totalizerDuRightController.text.toString()),
+            odometerReading:
+                double.tryParse(odometerController.text.toString()),
+            totalizerDuLeft:
+                double.tryParse(totalizerDuLeftController.text.toString()),
+            totalizerDuRight:
+                double.tryParse(totalizerDuRightController.text.toString()),
           )
-          .then((response) {
+              .then((response) {
             switch (response) {
               case Response.nullData:
                 showSnackBar(
@@ -597,10 +700,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 stopLocationUpdates();
                 routineProvider.isRoutineEnd = true;
                 showSnackBar(context: context, message: 'Success');
-                clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                clearTextFields([
+                  odometerController,
+                  totalizerDuLeftController,
+                  totalizerDuRightController
+                ]);
                 logOutClickEvent(context, loginProvider);
                 // Navigator.of(context).pop();
-                
+
                 break;
             }
           });
@@ -614,8 +721,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void refillArrivedClickEvent(BuildContext context, Routine routine, int index,
       RoutinesProvider routineProvider, LoginProvider loginProvider) {
-
-
     showDialog(
         context: context,
         builder: (context) {
@@ -623,19 +728,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
             isOdometer: true,
             odometerController: odometerController,
             onTapSave: () async {
-              routineProvider.routines[index].odometerReading = double.parse(odometerController.text.toString());
+              routineProvider.routines[index].odometerReading =
+                  double.parse(odometerController.text.toString());
               routineProvider.routines[index].arrivedDatetime = DateTime.now();
               // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
 
               try {
                 await LocationService().determinePosition().then((position) {
-                  routineProvider.routines[index].endLatitude = position.latitude;
-                  routineProvider.routines[index].endLongitude = position.longitude;
+                  routineProvider.routines[index].endLatitude =
+                      position.latitude;
+                  routineProvider.routines[index].endLongitude =
+                      position.longitude;
                   stopLocationUpdates();
                   clearTextFields([odometerController]);
                   Navigator.of(context).pop();
-                  routineProvider.updateReachedAt(apiToken: loginProvider.userDetails!.apiToken!, routine: routineProvider.routines[index]);
-                  Navigator.of(context).push(MaterialPageRoute( builder: ((context) => RefillScreen(  index: index, ))));
+                  routineProvider.updateReachedAt(
+                      apiToken: loginProvider.userDetails!.apiToken!,
+                      routine: routineProvider.routines[index]);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => RefillScreen(
+                            index: index,
+                          ))));
                 });
               } catch (e) {
                 clearTextFields([odometerController]);
@@ -713,10 +826,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 // //  // final Dio dio = Dio();
 
   Future<void> checkTOT(int flag, TextEditingController controller) async {
-             print('[trip-test] dashboard Check TOT clicked $flag');
+    print('[trip-test] dashboard Check TOT clicked $flag');
 
     final String baseUrl1 = '$mainUrl/api/v1/du-totalizer-readings';
-        final String baseUrl2 = '$mainUrl/api/v1/gvr-du-totalizer-readings';
+    final String baseUrl2 = '$mainUrl/api/v1/gvr-du-totalizer-readings';
 
     try {
       final response = await http.get(Uri.parse(baseUrl1)
@@ -740,7 +853,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-   void logOutClickEvent(
+  void logOutClickEvent(
       BuildContext context, LoginProvider loginProvider) async {
     await loginProvider
         .changeSessionStage(sessionStage: SessionStage.logout)
@@ -749,7 +862,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           .push(MaterialPageRoute(builder: (context) => const LoginScreen()));
     });
   }
-
 
   void deliveryArrivedClickEvent(
       BuildContext context,
@@ -788,27 +900,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
               totalizerDuLeftController: totalizerDuLeftController,
               totalizerDuRightController: totalizerDuRightController,
               onTapSave: () async {
-                final odometerReading = double.tryParse(odometerController.text.toString());
-                final totalizerDuLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
-                final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
-                if (odometerReading != null && totalizerDuLeftReading != null && totalizerDuRightReading != null) {
-                  routineProvider.routines[index].odometerReading = odometerReading;
-                  routineProvider.routines[index].startTotalizerDuLeft = totalizerDuLeftReading;
-                  routineProvider.routines[index].startTotalizerDuRight =  totalizerDuRightReading;
-                  routineProvider.routines[index].arrivedDatetime = DateTime.now();
-              // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-              debugPrint('routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
+                final odometerReading =
+                    double.tryParse(odometerController.text.toString());
+                final totalizerDuLeftReading =
+                    double.tryParse(totalizerDuLeftController.text.toString());
+                final totalizerDuRightReading =
+                    double.tryParse(totalizerDuRightController.text.toString());
+                if (odometerReading != null &&
+                    totalizerDuLeftReading != null &&
+                    totalizerDuRightReading != null) {
+                  routineProvider.routines[index].odometerReading =
+                      odometerReading;
+                  routineProvider.routines[index].startTotalizerDuLeft =
+                      totalizerDuLeftReading;
+                  routineProvider.routines[index].startTotalizerDuRight =
+                      totalizerDuRightReading;
+                  routineProvider.routines[index].arrivedDatetime =
+                      DateTime.now();
+                  // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
+                  debugPrint(
+                      'routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
 
                   try {
-                    await LocationService() .determinePosition() .then((position) {
-                      routineProvider.routines[index].endLatitude = position.latitude;
-                      routineProvider.routines[index].endLongitude = position.longitude;
+                    await LocationService()
+                        .determinePosition()
+                        .then((position) {
+                      routineProvider.routines[index].endLatitude =
+                          position.latitude;
+                      routineProvider.routines[index].endLongitude =
+                          position.longitude;
                       routineProvider.notifyDataChange();
                       stopLocationUpdates();
-                      routineProvider.updateReachedAt(apiToken: loginProvider.userDetails!.apiToken!, routine: routineProvider.routines[index]);
-                      clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                      routineProvider.updateReachedAt(
+                          apiToken: loginProvider.userDetails!.apiToken!,
+                          routine: routineProvider.routines[index]);
+                      clearTextFields([
+                        odometerController,
+                        totalizerDuLeftController,
+                        totalizerDuRightController
+                      ]);
                       Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(  builder: ((context) => DeliveryScreen(  index: index,  ))));
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: ((context) => DeliveryScreen(
+                                index: index,
+                              ))));
                     });
                   } catch (e) {
                     // ignore: use_build_context_synchronously
@@ -817,7 +952,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 }
               },
               onTapCancel: () {
-                clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                clearTextFields([
+                  odometerController,
+                  totalizerDuLeftController,
+                  totalizerDuRightController
+                ]);
                 Navigator.of(context).pop();
               },
             );
@@ -850,28 +989,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       totalizerDuLeftController: totalizerDuLeftController,
                       totalizerDuRightController: totalizerDuRightController,
                       onTapSave: () async {
-                        final odometerReading = double.tryParse(odometerController.text.toString());
-                        final totalizerDuLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
-                        final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
-                        if (odometerReading != null && totalizerDuLeftReading != null && totalizerDuRightReading != null) {
-                          routineProvider.routines[index].odometerReading = odometerReading;
-                          routineProvider.routines[index].startTotalizerDuLeft = totalizerDuLeftReading;
-                          routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
-                          routineProvider.routines[index].arrivedDatetime = DateTime.now();
-              // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-              debugPrint('routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
-
+                        final odometerReading =
+                            double.tryParse(odometerController.text.toString());
+                        final totalizerDuLeftReading = double.tryParse(
+                            totalizerDuLeftController.text.toString());
+                        final totalizerDuRightReading = double.tryParse(
+                            totalizerDuRightController.text.toString());
+                        if (odometerReading != null &&
+                            totalizerDuLeftReading != null &&
+                            totalizerDuRightReading != null) {
+                          routineProvider.routines[index].odometerReading =
+                              odometerReading;
+                          routineProvider.routines[index].startTotalizerDuLeft =
+                              totalizerDuLeftReading;
+                          routineProvider.routines[index]
+                              .startTotalizerDuRight = totalizerDuRightReading;
+                          routineProvider.routines[index].arrivedDatetime =
+                              DateTime.now();
+                          // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
+                          debugPrint(
+                              'routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
 
                           try {
-                            await LocationService().determinePosition() .then((position) {
-                              routineProvider.routines[index].endLatitude = position.latitude;
-                              routineProvider.routines[index].endLongitude = position.longitude;
+                            await LocationService()
+                                .determinePosition()
+                                .then((position) {
+                              routineProvider.routines[index].endLatitude =
+                                  position.latitude;
+                              routineProvider.routines[index].endLongitude =
+                                  position.longitude;
                               routineProvider.notifyDataChange();
                               stopLocationUpdates();
-                              routineProvider.updateReachedAt(apiToken: loginProvider.userDetails!.apiToken!, routine: routineProvider.routines[index]);
-                              clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                              routineProvider.updateReachedAt(
+                                  apiToken:
+                                      loginProvider.userDetails!.apiToken!,
+                                  routine: routineProvider.routines[index]);
+                              clearTextFields([
+                                odometerController,
+                                totalizerDuLeftController,
+                                totalizerDuRightController
+                              ]);
                               Navigator.of(context).pop();
-                              Navigator.of(context).push(MaterialPageRoute( builder: ((context) => DeliveryScreen( index: index,))));
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: ((context) => DeliveryScreen(
+                                        index: index,
+                                      ))));
                             });
                           } catch (e) {
                             // ignore: use_build_context_synchronously
@@ -881,7 +1043,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         }
                       },
                       onTapCancel: () {
-                        clearTextFields([odometerController,totalizerDuLeftController,totalizerDuRightController]);
+                        clearTextFields([
+                          odometerController,
+                          totalizerDuLeftController,
+                          totalizerDuRightController
+                        ]);
                         Navigator.of(context).pop();
                       },
                     );
@@ -965,8 +1131,3 @@ Future<bool> checkAccuracy(double lat, double long) async {
     return true;
   }
 }
-
-
- 
-
-

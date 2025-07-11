@@ -100,7 +100,8 @@ class LoginProvider extends ChangeNotifier {
           loginDetailsBox: DatabaseHelper().userDetailsBox),
       networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
     );
-    final failureOrGetOtp = await GetOtp(repository: repository).call(userDetails: userDetails!);
+    final failureOrGetOtp =
+        await GetOtp(repository: repository).call(userDetails: userDetails!);
     failureOrGetOtp?.fold((newFailure) {
       userDetails = null; //todo change to null
       failure = newFailure;
@@ -125,7 +126,8 @@ class LoginProvider extends ChangeNotifier {
           loginDetailsBox: DatabaseHelper().userDetailsBox),
       networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
     );
-    final failureOrPutOtp = await PutOtp(repository: repository).call(userDetails: userDetails!);
+    final failureOrPutOtp =
+        await PutOtp(repository: repository).call(userDetails: userDetails!);
     failureOrPutOtp?.fold((newFailure) {
       userDetails = null; //todo change to null
       failure = newFailure;
