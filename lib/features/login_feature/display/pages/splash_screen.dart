@@ -210,119 +210,65 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  Future<Widget> navigateUser(
-    LoginProvider loginProvider,
-    VehicleChecksProvider vehicleChecksProvider,
-    RoutinesProvider routinesProvider,
-    BuildContext context,
-  ) async {
-    await Future.delayed(
-        const Duration(milliseconds: 300)); // Reduced splash delay
-
-    // Step 1: Check location permission
-    var status = await Permission.location.status;
-    if (!status.isGranted) {
-      status = await Permission.location.request();
-    }
-
-    // Step 2: If granted, try to get location with timeout
-    if (status.isGranted) {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        // 🚨 Show toast and redirect
-        Fluttertoast.showToast(
-          msg: "Location is turned off. Please enable GPS.",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: Colors.black87,
-          textColor: Colors.white,
-        );
-        await Geolocator.getCurrentPosition(); // Open device's GPS settings
-        return const LoginScreen(); // fallback
-      }
-      try {
-        await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        ).timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            // debugPrint("Location fetch timed out");
-            // return Future.value(null);
-            debugPrint("Location fetch timed out");
-            throw Exception("Location fetch timed out");
-          },
-        );
-      } catch (e) {
-        debugPrint("Location fetch error: $e");
-      }
-    } else if (status.isPermanentlyDenied) {
-      await openAppSettings();
-      return const LoginScreen();
-    } else {
-      debugPrint("Permission denied temporarily.");
-      return const LoginScreen();
-    }
-    // bool permission = await Geolocator.isLocationServiceEnabled();
-    // if (!permission) {
-    //   hideLoading();
-    //   _showLocationServiceRequiredDialog();
-    //   return const LoginScreen();
-    // }
-    // Step 3: Check user session and route
-    await loginProvider.checkUserDataIsValid();
-
-    if (loginProvider.userDetails != null && loginProvider.failure == null) {
-      switch (loginProvider.userDetails!.sessionStage) {
-        case SessionStage.login:
-          return const LoginScreen();
-        case SessionStage.loginDetails:
-          return const LoginDetailsScreen();
-        case SessionStage.vehicleChecks:
-          return const VehicleChecksScreen();
-        case SessionStage.dispenserChecks:
-          return const DispenserChecksScreen();
-        case SessionStage.dashboard:
-          return const HomeScreen();
-        case SessionStage.logout:
-          return const LoginScreen();
-      }
-    }
-
-    return const LoginScreen(); // fallback
-  }
-
   // Future<Widget> navigateUser(
   //   LoginProvider loginProvider,
   //   VehicleChecksProvider vehicleChecksProvider,
   //   RoutinesProvider routinesProvider,
   //   BuildContext context,
   // ) async {
-  //   // Step 1: Request location permission
+  //   await Future.delayed(
+  //       const Duration(milliseconds: 300)); // Reduced splash delay
+
+  //   // Step 1: Check location permission
   //   var status = await Permission.location.status;
   //   if (!status.isGranted) {
   //     status = await Permission.location.request();
   //   }
 
+  //   // Step 2: If granted, try to get location with timeout
   //   if (status.isGranted) {
-  //     try {
-  //       Position position = await Geolocator.getCurrentPosition(
-  //         desiredAccuracy: LocationAccuracy.high,
+  //     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  //     if (!serviceEnabled) {
+  //       // 🚨 Show toast and redirect
+  //       Fluttertoast.showToast(
+  //         msg: "Location is turned off. Please enable GPS.",
+  //         toastLength: Toast.LENGTH_LONG,
+  //         gravity: ToastGravity.CENTER,
+  //         backgroundColor: Colors.black87,
+  //         textColor: Colors.white,
   //       );
-  //       debugPrint(
-  //           "User Location: ${position.latitude}, ${position.longitude}");
+  //       await Geolocator.getCurrentPosition(); // Open device's GPS settings
+  //       return const LoginScreen(); // fallback
+  //     }
+  //     try {
+  //       await Geolocator.getCurrentPosition(
+  //         desiredAccuracy: LocationAccuracy.high,
+  //       ).timeout(
+  //         const Duration(seconds: 10),
+  //         onTimeout: () {
+  //           // debugPrint("Location fetch timed out");
+  //           // return Future.value(null);
+  //           debugPrint("Location fetch timed out");
+  //           throw Exception("Location fetch timed out");
+  //         },
+  //       );
   //     } catch (e) {
-  //       debugPrint("Failed to get location: $e");
+  //       debugPrint("Location fetch error: $e");
   //     }
   //   } else if (status.isPermanentlyDenied) {
   //     await openAppSettings();
-  //     return const LoginScreen(); // fallback to login if user doesn't allow
+  //     return const LoginScreen();
   //   } else {
-  //     // Optional: show a custom alert or fallback
-  //     debugPrint("Location permission denied.");
+  //     debugPrint("Permission denied temporarily.");
   //     return const LoginScreen();
   //   }
-
-  //   // Step 2: Continue with login/session stage logic
+  //   // bool permission = await Geolocator.isLocationServiceEnabled();
+  //   // if (!permission) {
+  //   //   hideLoading();
+  //   //   _showLocationServiceRequiredDialog();
+  //   //   return const LoginScreen();
+  //   // }
+  //   // Step 3: Check user session and route
   //   await loginProvider.checkUserDataIsValid();
 
   //   if (loginProvider.userDetails != null && loginProvider.failure == null) {
@@ -340,22 +286,36 @@ class SplashScreen extends StatelessWidget {
   //       case SessionStage.logout:
   //         return const LoginScreen();
   //     }
-  //   } else {
-  //     return const LoginScreen();
   //   }
+
+  //   return const LoginScreen(); // fallback
   // }
+
+    Future<Widget> navigateUser(
+      LoginProvider loginProvider,
+      VehicleChecksProvider vehicleChecksProvider,
+      RoutinesProvider routinesProvider,
+      BuildContext context) async {
+    await loginProvider.checkUserDataIsValid();
+    if (loginProvider.userDetails != null && loginProvider.failure == null) {
+      switch (loginProvider.userDetails!.sessionStage) {
+        case SessionStage.login:
+          return const LoginScreen();
+        case SessionStage.loginDetails:
+          return const LoginDetailsScreen();
+        case SessionStage.vehicleChecks:
+          return const VehicleChecksScreen();
+        case SessionStage.dispenserChecks:
+          return const DispenserChecksScreen();
+        case SessionStage.dashboard:
+          return const HomeScreen();
+        case SessionStage.logout:
+          return const LoginScreen();
+      }
+    } else {
+      return const LoginScreen();
+    }
+  }
+
 }
 
-class _showLocationServiceRequiredDialog {
-  void call() {
-    Fluttertoast.showToast(
-      msg: "Location services are denied, please enable the location services",
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.yellow,
-      textColor: Colors.black,
-      fontSize: 16.0,
-    );
-  }
-}

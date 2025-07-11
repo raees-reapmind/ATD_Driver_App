@@ -93,6 +93,7 @@ import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_
 import 'package:atd/providers/stock_in_list_provider.dart';
 import 'package:atd/providers/stock_out_list_provider.dart';
 import 'package:atd/providers/stock_transfer_navigation_provider.dart';
+import 'package:atd/utils/location_manager.dart';
 import 'package:atd/utils/network_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -150,6 +151,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       // navigatorKey: navigatorKey,
       initialRoute: '/',
+      builder: (context, child) => LocationAwareWrapper(child: child!),
       routes: {
         '/': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),

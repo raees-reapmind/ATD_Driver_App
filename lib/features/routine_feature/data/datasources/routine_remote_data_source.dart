@@ -303,6 +303,42 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     }
   }
 
+ @override
+  Future<String>? storeVehicleEndLocation(
+      {required Routine routine, required String apiToken}) async {
+    dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
+    dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
+    dio.options.headers['Accept'] = 'application/json';
+    
+    final response = await dio.post(
+      postEndRoutineUrl,
+      options: Options(validateStatus: (status) => true),
+      data: routine.toEndTripMap(),
+      
+    );
+
+      debugPrint('[api-test] postEndRoutine rurl : ${postEndRoutineUrl}');
+      debugPrint('[api-test] postEndRoutine request ${routine.toEndTripMap()}');
+
+      final responseMap = Map<String, dynamic>.from(response.data);
+
+      debugPrint('[api-test] postEndRoutine responseMap: ${responseMap}');
+
+    debugPrint(responseMap.toString());
+
+    if (response.statusCode == 200) {
+      debugPrint(responseMap.toString());
+
+      return responseMap['message'];
+    } else {
+      throw ServerException(
+          message:
+              '[${response.statusCode}] ${responseMap['message'].toString()}');
+    }
+  }
+
+
+
   @override
   Future<String>? postRefillReport(
       {required Routine routine, required String apiToken}) async {
