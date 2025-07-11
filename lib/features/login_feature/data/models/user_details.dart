@@ -18,8 +18,13 @@ class UserDetails {
   final String? deviceName;
   @HiveField(6)
   SessionStage sessionStage = SessionStage.login;
-    @HiveField(7)
+  @HiveField(7)
   final int? step;
+  @HiveField(8)
+  final int? userId;
+  @HiveField(9)
+  final int? vehicleId;
+  
 
   UserDetails({
     required this.phoneNo,
@@ -29,12 +34,14 @@ class UserDetails {
     this.otp,
     this.deviceName,
     this.step,
+    this.userId,
+    this.vehicleId,
   });
 
 
   @override
   String toString() {
-    return 'UserDetails{phoneNo: $phoneNo, vehicleRegNo: $vehicleRegNo, otp: $otp, dateTime: $dateTime, apiToken: $apiToken, deviceName: $deviceName, sessionStage: $sessionStage, step $step}';
+    return 'UserDetails{phoneNo: $phoneNo, vehicleRegNo: $vehicleRegNo, otp: $otp, dateTime: $dateTime, apiToken: $apiToken, deviceName: $deviceName, sessionStage: $sessionStage, step $step, userId: $userId, vehicleId: $vehicleId}';
   }
 
   Map<String, dynamic> toMap() {
@@ -43,7 +50,9 @@ class UserDetails {
       'vehicle_no': vehicleRegNo,
       'otp': otp,
       'device_name': deviceName,
-      'step': step
+      'step': step,
+      'user_id': userId, 
+      'vehicle_id': vehicleId,
     };
   }
 

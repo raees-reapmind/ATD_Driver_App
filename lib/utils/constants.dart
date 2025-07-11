@@ -37,6 +37,7 @@ const postVehicleDetailsUrl = '$mainUrl/api/app/vehicle-readings';
 const getVehicleDetailsUrl = '$mainUrl/api/app/vehicle-readings';
 const getduStatus = '$duUrl/api/v1/du-date-time';
 const getBillUrl = '$mainUrl/api/app/routines/bill';
+
 const userDetailsBoxKey = 'user_details_box_key';
 const vehicleChecksBoxKey = 'vehicle_checks_box_key';
 const dispenserChecksBoxKey = 'dispenser_checks_box_key';
@@ -46,6 +47,7 @@ const liveLocationPostApi = '$mainUrl/endpoint';
 const postTransferReportUrl = '$mainUrl/api/app/routines/internal-transfer';
 const postTransferFromReportUrl = '$mainUrl/api/app/routines/internal-transfer-from';
 const updateReachedAt = '$mainUrl/api/app/update-reached-at';
+const storeVehicleEndLocation = '$mainUrl/api/app/v2/store-vehicle-end-location';
 
 void showLoading() {
   if (Get.isDialogOpen == true) {

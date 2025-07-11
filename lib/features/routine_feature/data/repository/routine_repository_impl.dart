@@ -163,6 +163,40 @@ class RoutineRepositoryImpl implements RoutineRepository {
     }
   }
 
+@override
+Future<Either<Failure, String?>>? storeVehicleLocationEnd({
+  required int vehicleId,
+  required int driverId,
+  required double lat,
+  required double long,
+  required String address,
+  required String reachedAt,
+  required String date,
+  required String apiToken,
+}) async {
+  if (await networkInfo.isConnected!) {
+  try {
+    final message = await remoteDataSource.storeVehicleLocationEnd(
+      vehicleId: vehicleId,
+      driverId: driverId,
+      lat: lat,
+      long: long,
+      address: address,
+      reachedAt: reachedAt,
+      date: date,
+      apiToken: apiToken,
+    );
+
+    return Right(message);
+      } on ServerException catch (error) {
+        return Left(ServerFailure(errorMessage: error.message.toString()));
+      }
+    } else {
+      return Left(
+          NetworkConnectionFailure(errorMessage: "No internet connection"));
+    }
+  }
+
   @override
   Future<Either<Failure, String?>>? postRefillReport(
       {required Routine routine, required String apiToken}) async {
