@@ -59,7 +59,7 @@ class VehicleDetailsRemoteDataSourceImpl implements VehicleDetailsRemoteDataSour
     
     final responseMap = Map<String, dynamic>.from(response.data);
     
-    debugPrint('[api-test] postVehicleDetails Body: ${responseMap}');
+    debugPrint('[api-test] postVehicleDetails Body: $responseMap');
     debugPrint('[api-test] postVehicleDetails Body-2: ${responseMap.toString()}');
 
     if (response.statusCode == 200) {

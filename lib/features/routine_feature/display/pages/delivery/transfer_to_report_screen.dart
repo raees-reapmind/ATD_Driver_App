@@ -1,10 +1,7 @@
-import 'package:atd/features/routine_feature/data/models/additonal_charge.dart';
-import 'package:atd/features/routine_feature/display/pages/delivery/delivery_invoice_screen.dart';
 import 'package:atd/features/routine_feature/display/pages/delivery/transfer_invoice_screen.dart';
 import 'package:atd/utils/widgets/custom_alert_dialog.dart';
 import 'package:atd/utils/widgets/provider_export.dart';
 import 'package:provider/provider.dart';
-import 'create_asset_report_screen.dart';
 import 'transfer_to_create_asset_report_screen.dart';
 
 import 'package:atd/features/routine_feature/display/widgets/title_content.dart';
@@ -61,7 +58,7 @@ class _TransferScreenState extends State<TransferScreen> {
                             const SizedBox(height: 20),
                             TitleContent(
                               title: "To",
-                              content: routineProvider.routines[widget.index].action.toString() ?? '',
+                              content: routineProvider.routines[widget.index].action.toString(),
                             ),
                             TitleContent(
                               title: "ID",

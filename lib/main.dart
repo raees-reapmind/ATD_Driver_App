@@ -172,13 +172,11 @@ import 'package:atd/features/home_navigation_feature/display/pages/home_screen.d
 import 'package:atd/features/image_upload_feature/display/providers/image_upload_provider.dart';
 import 'package:atd/features/login_feature/display/pages/login_screen.dart';
 import 'package:atd/features/login_feature/display/pages/splash_screen.dart';
-import 'package:atd/features/routine_feature/display/pages/dashboard_screen.dart';
 import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_details_provider.dart';
 import 'package:atd/providers/stock_in_list_provider.dart';
 import 'package:atd/providers/stock_out_list_provider.dart';
 import 'package:atd/providers/stock_transfer_navigation_provider.dart';
 import 'package:atd/utils/location_manager.dart';
-import 'package:atd/utils/network_checker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';

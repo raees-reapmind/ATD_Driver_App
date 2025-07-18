@@ -35,7 +35,7 @@ class Dispenser1Page extends StatelessWidget {
                 ),
                 Text(
                   "LIVE",
-                  style: Theme.of(context).textTheme.subtitle2,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ],
             ),
@@ -48,7 +48,7 @@ class Dispenser1Page extends StatelessWidget {
                 ),
                 Text(
                   "Connected",
-                  style: Theme.of(context).textTheme.subtitle2,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ],
             ),
@@ -61,7 +61,7 @@ class Dispenser1Page extends StatelessWidget {
                 ),
                 Text(
                   "LIVE",
-                  style: Theme.of(context).textTheme.subtitle2,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ],
             ),
@@ -69,7 +69,7 @@ class Dispenser1Page extends StatelessWidget {
               contentPadding: const EdgeInsets.all(0),
               title: Text(
                 "Asset",
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               trailing: DropdownButton<String>(
                 alignment: AlignmentDirectional.centerEnd,
@@ -91,7 +91,7 @@ class Dispenser1Page extends StatelessWidget {
               contentPadding: const EdgeInsets.all(0),
               title: Text(
                 "Quantity",
-                style: Theme.of(context).textTheme.subtitle1,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               trailing: const SizedBox(
                   width: 50,

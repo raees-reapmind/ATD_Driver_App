@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:atd/core/services/image_picker_service.dart';
 import 'package:atd/features/image_upload_feature/display/providers/image_upload_provider.dart';
@@ -65,19 +64,19 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
 
   Future<void> fetchTran(int flag) async {
     final String finaltrans = '$mainUrl/api/v1/gvr-du-trac-data';
-    print('finaltrans : $finaltrans');
+    debugPrint('finaltrans : $finaltrans');
 
     try {
       final response =
           await dio.get(finaltrans, queryParameters: {'flag': flag});
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {});
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
   Future<void> checkTOT(int flag) async {
-    print('[trip-test] create asset Check TOT clicked $flag');
+    debugPrint('[trip-test] create asset Check TOT clicked $flag');
 
     final String checkTOTURL;
     if (flag == 1) {
@@ -85,7 +84,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
     } else {
       checkTOTURL = '$mainUrl/api/v1/gvr-du-totalizer-readings';
     }
-    print('Url is $checkTOTURL');
+    debugPrint('Url is $checkTOTURL');
     try {
       String description = '';
       final response =
@@ -93,12 +92,12 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
         final responseData = jsonResponse['response'];
-        print('CheckTOT is $responseData');
+        debugPrint('CheckTOT is $responseData');
         if (flag == 1) {
           description = responseData['description'];
         }
         final double totalizerReading = responseData['totalizerReading'];
-        print('Totalizer Reading: $totalizerReading');
+        debugPrint('Totalizer Reading: $totalizerReading');
         if (totCount == 0) {
           setState(() {
             startTotalizer = totalizerReading;
@@ -107,13 +106,13 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
           _timer = Timer.periodic(const Duration(seconds: 5), (timer) {});
           setPreset(flag, quantity);
         } else if (totCount != 0) {
-          print('Totalizer End:$totCount');
+          debugPrint('Totalizer End:$totCount');
           setState(() {
             endTotalizer = totalizerReading;
             finalQty = ((endTotalizer ?? 0.0) - (startTotalizer ?? 0.0));
             formattedVlueQty = (finalQty ?? 0.0).toStringAsFixed(2);
             quantityController.text = formattedVlueQty;
-          print('[api-test] checkTOT quantity : ${quantityController.text}');
+          debugPrint('[api-test] checkTOT quantity : ${quantityController.text}');
 
           });
           if (flag == 1) {
@@ -124,15 +123,15 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
         setState(() {
           duStatus = description;
         });
-        print('Processed Start Totalizer: $startTotalizer');
+        debugPrint('Processed Start Totalizer: $startTotalizer');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
   Future<void> setPreset(int flag, double? quantity) async {
-    print('Set preset called $flag');
+    debugPrint('Set preset called $flag');
     final String setPreset;
     if (flag == 1) {
       setPreset = '$mainUrl/api/v1/du-preset-data-volume';
@@ -196,7 +195,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
         // print('Failed to set preset. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
@@ -221,12 +220,12 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
         setState(() {
           duStatus = description;
         });
-        print('Du Start response: $responseData');
+        debugPrint('Du Start response: $responseData');
       } else {
-        print('Failed to set preset. Status code: ${response.statusCode}');
+        debugPrint('Failed to set preset. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
@@ -242,27 +241,27 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
         final Map<String, dynamic> jsonResponse = response.data;
         final responseData = jsonResponse['response'];
         final String description = responseData['description'];
-        print('DU Stop response: $responseData');
+        debugPrint('DU Stop response: $responseData');
         setState(() {
           duStatus = description;
         });
       } else {
-        print('Failed to set preset. Status code: ${response.statusCode}');
+        debugPrint('Failed to set preset. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
   void _startDataPulling(int flag) {
-    print('Start dispensing btn clicked $flag');
+    debugPrint('Start dispensing btn clicked $flag');
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       fetchData(flag);
     });
   }
 
   Future<void> fetchData(int flag) async {
-    print('fetch data started $flag');
+    debugPrint('fetch data started $flag');
     final String baseURL;
     if (flag == 1) {
       baseURL = '$mainUrl/api/v1/du-state';
@@ -277,12 +276,12 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
         final responseData = jsonResponse['response'];
         final String description = responseData['description'];
         final String stateCode = responseData['stateCode'];
-        print(
+        debugPrint(
             'State code is $stateCode and DuConnectCounter $DuConnectCounter');
         if (flag == 1) {
           if (description == "No Dispensing in Control Mode" &&
               DuConnectCounter == 0) {
-            print('it"s no dispensing in controle mode $flag');
+            debugPrint('it"s no dispensing in controle mode $flag');
             checkTOT(flag);
             DuConnectCounter++;
           } else if (description == "No Dispensing in Control Mode" &&
@@ -296,7 +295,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
           });
         } else {
           if (stateCode == "61" && DuConnectCounter == 0) {
-            print('OFF/IDL $flag');
+            debugPrint('OFF/IDL $flag');
             checkTOT(flag);
             DuConnectCounter++;
           } else if (stateCode == "A1" && DuConnectCounter != 0) {
@@ -311,10 +310,10 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
           });
         }
       } else {
-        print('Failed to fetch data. Status code: ${response.statusCode}');
+        debugPrint('Failed to fetch data. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
@@ -324,7 +323,6 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
 
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-    final dispenserChecksProvider = Provider.of<DispenserChecksProvider>(context);
 
     setState(() {
       quantity = routineProvider.routines[widget.index].quantity;
@@ -357,7 +355,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                           const SizedBox(height: 20),
                           Text(
                             "Select Asset",
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           DropdownButton<Asset>(
                             isExpanded: true,
@@ -383,7 +381,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                             child: Center(
                               child: Text(
                                 'OR',
-                                style: Theme.of(context).textTheme.subtitle2,
+                                style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ),
                           ),
@@ -391,7 +389,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                             contentPadding: const EdgeInsets.all(0),
                             title: Text(
                               "Scan QR",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             trailing: IconButton(
                                 onPressed: () {},
@@ -402,7 +400,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                           const SizedBox(height: 20),
                           Text(
                             "Select DU",
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           DropdownButton<String>(
                             alignment: AlignmentDirectional.centerEnd,
@@ -463,7 +461,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                                 flex: 3,
                                 child: Text(
                                   "Quantity",
-                                  style: Theme.of(context).textTheme.subtitle1,
+                                  style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ),
                               Expanded(
@@ -491,7 +489,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                             contentPadding: const EdgeInsets.all(0),
                             title: Text(
                               "Upload image",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             subtitle: const Text(
                                 "Kindly upload the images of DU receipt"),

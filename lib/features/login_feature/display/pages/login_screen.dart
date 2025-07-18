@@ -7,8 +7,7 @@ import 'package:atd/features/login_feature/data/datasources/login_local_data_sou
 import 'package:atd/features/login_feature/data/datasources/login_remote_data_source.dart';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import 'package:atd/features/login_feature/display/pages/login_details_screen.dart';
-import 'package:atd/features/login_feature/display/provider/login_provider.dart';
-import 'package:atd/features/routine_feature/display/pages/dashboard_screen.dart';
+import 'package:atd/features/login_feature/display/provider/login_provider.dart'; 
 import 'package:atd/features/vehicle_checks_feature/display/pages/vehicle_checks_screen.dart';
 import 'package:atd/features/vehicle_checks_feature/display/provider/vehicle_checks_provider.dart';
 import 'package:atd/utils/utils_export.dart';
@@ -62,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final loginProvider = Provider.of<LoginProvider>(context);
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -200,8 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           .push(MaterialPageRoute(
                                         builder: (context) =>
                                             const HomeScreen(),
-                                      ));
-                                      //TODO: For reverse ripple effect animation
+                                      )); 
                                       setState(() {
                                         isFinished = false;
                                       });

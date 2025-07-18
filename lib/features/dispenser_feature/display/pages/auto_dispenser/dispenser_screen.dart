@@ -1,6 +1,5 @@
 import 'package:atd/features/dispenser_feature/display/providers/dispenser_page_navigation_provider.dart';
-import '../../../../routine_feature/data/models/routine.dart';
-import '../../../../routine_feature/domain/entities/routine_test.dart';
+import '../../../../routine_feature/data/models/routine.dart'; 
 import 'dispenser_2_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

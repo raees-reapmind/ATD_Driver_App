@@ -66,7 +66,7 @@ class _CreateDispenserCheckState extends State<CreateDispenserCheck> {
                           const SizedBox(height: 20),
                           Text(
                             "From",
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           DropdownButton<String>(
                             alignment: AlignmentDirectional.centerEnd,
@@ -91,7 +91,7 @@ class _CreateDispenserCheckState extends State<CreateDispenserCheck> {
                           const SizedBox(height: 10),
                           Text(
                             "To",
-                            style: Theme.of(context).textTheme.subtitle1,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                           DropdownButton<String>(
                             isExpanded: true,
@@ -144,7 +144,7 @@ class _CreateDispenserCheckState extends State<CreateDispenserCheck> {
                             contentPadding: const EdgeInsets.all(0),
                             title: Text(
                               "Upload image",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             subtitle: const Text(
                                 "Kindly upload the images of checks performed"),

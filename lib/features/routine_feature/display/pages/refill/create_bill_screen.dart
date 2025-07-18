@@ -64,7 +64,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                                 flex: 3,
                                 child: Text(
                                   "Quantity",
-                                  style: Theme.of(context).textTheme.subtitle1,
+                                  style: Theme.of(context).textTheme.titleMedium,
                                 ),
                               ),
                               Expanded(
@@ -82,7 +82,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                             contentPadding: const EdgeInsets.all(0),
                             title: Text(
                               "Upload image",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             subtitle: const Text(
                                 "Kindly upload the images of DU receipt"),

@@ -1,4 +1,3 @@
-import 'package:atd/features/login_feature/data/models/user_details.dart';
 import 'package:atd/features/routine_feature/data/models/du_response_data.dart';
 import 'package:atd/features/routine_feature/data/models/routine_details.dart';
 import 'package:dartz/dartz.dart';

@@ -20,7 +20,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../login_feature/display/provider/login_provider.dart';
 import '../../providers/routines_provider.dart';
 import '../../widgets/title_content.dart';
-import 'package:atd/utils/helper.dart';
 
 class DeliveryInvoiceScreen extends StatefulWidget {
   final int index;
@@ -278,9 +277,11 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
                       imageUploadProvider.eitherFailureOrUploadImage(imagePath: imagePath, apiToken: apiToken),
                 );
               } else {
+                // ignore: use_build_context_synchronously
                 showSnackBar(context: context, message: 'Failed to process signature');
               }
             } else {
+              // ignore: use_build_context_synchronously
               showSnackBar(context: context, message: 'No signature found');
             }
 
@@ -290,9 +291,12 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
               routineProvider.routines[index].recieverName = receiverNameController.text.toString();
               routineProvider.notifyDataChange();
 
+              // ignore: use_build_context_synchronously
               showSnackBar(context: context, message: 'Signature Saved');
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop();
             } else {
+              // ignore: use_build_context_synchronously
               showSnackBar(context: context, message: 'Image upload failed');
             }
          
@@ -359,11 +363,14 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
         routineProvider.routines[index].imageList = [
           ImageDetails(image: image, imageId: imageId, imagePath: image.path)
         ];
+        // ignore: use_build_context_synchronously
         showSnackBar(context: context, message: 'Image Attached');
       } else {
+        // ignore: use_build_context_synchronously
         showSnackBar(context: context, message: 'Failed to upload image');
       }
     } else {
+      // ignore: use_build_context_synchronously
       showSnackBar(context: context, message: 'Failed to capture image');
     }
   }
@@ -371,9 +378,10 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
 
 Future<void> openAnotherApp() async {
   // Replace "exampleapp://" with the actual deep link or scheme of the app you want to open
-  final String deepLink = "csi://app/EastmanDecantActivity?order_no=1224&order_qty=10&otp=1234&rfid_tag=";
+  const String deepLink = "csi://app/EastmanDecantActivity?order_no=1224&order_qty=10&otp=1234&rfid_tag=";
 
   // Check if the app is installed
+  // ignore: deprecated_member_use
   if (await canLaunch(deepLink)) {
     // Use the deep link to open the app
     await launchUrl(Uri.parse(deepLink));

@@ -7,12 +7,10 @@ import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import 'package:atd/features/login_feature/data/repository/login_repository_impl.dart';
 import 'package:atd/features/login_feature/domain/usecases/get_local_user_details.dart';
 import 'package:atd/features/login_feature/domain/usecases/get_otp.dart';
-import 'package:atd/features/login_feature/domain/usecases/put_otp.dart';
-import 'package:atd/utils/helper.dart';
+import 'package:atd/features/login_feature/domain/usecases/put_otp.dart'; 
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/cupertino.dart'; 
 import '../../../../core/connection/network_info.dart';
 import '../../data/models/user_details.dart';
 

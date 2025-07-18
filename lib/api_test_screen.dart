@@ -54,7 +54,6 @@ class _ApiTestScreenState extends State<ApiTestScreen> {
   @override
   Widget build(BuildContext context) {
     final loginProvider = Provider.of<LoginProvider>(context);
-    final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
 
     return SafeArea(
       child: Scaffold(
@@ -262,7 +261,7 @@ class _ApiTestScreenState extends State<ApiTestScreen> {
   }
 
   void getRoutineClickEvent(LoginProvider loginProvider) async {
-    print('[api-test] getRoutineClickEvent called---');
+    debugPrint('[api-test] getRoutineClickEvent called---');
     final Dio dio = Dio();
     dio.options.headers[HttpHeaders.contentTypeHeader] = ContentType.json;
     dio.options.headers[HttpHeaders.authorizationHeader] =
@@ -274,7 +273,7 @@ class _ApiTestScreenState extends State<ApiTestScreen> {
     );
 
     final result = Map<String, dynamic>.from(response.data);
-    print('[api-test] getRoutineClickEvent result---${result}');
+    debugPrint('[api-test] getRoutineClickEvent result---$result');
 
     final RoutineDetails routineDetails =
         RoutineDetails.fromMap(result['result']);
@@ -312,6 +311,7 @@ class _ApiTestScreenState extends State<ApiTestScreen> {
     } catch (e) {
       debugPrint("error : ${e.toString()}");
     }
+    return null;
   }
 
   void postUploadImageClickEvent(LoginProvider loginProvider,

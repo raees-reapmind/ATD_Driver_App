@@ -1,5 +1,4 @@
 import 'package:atd/features/dispenser_checks_feature/display/pages/dispenser_checks_screen.dart';
-import 'package:atd/features/home_navigation_feature/display/pages/home_screen.dart';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
 import 'package:atd/features/routine_feature/display/providers/routines_provider.dart';
@@ -22,19 +21,16 @@ class _VehicleChecksScreenState extends State<VehicleChecksScreen> {
 
 @override
   void initState() {
-    super.initState();
-
+    super.initState(); 
        WidgetsBinding.instance.addPostFrameCallback((_) {
-      final routineProvider =
-          Provider.of<RoutinesProvider>(context, listen: false);
-      final loginProvider =
-          Provider.of<LoginProvider>(context, listen: false);
-      final vehicleDetailsProvider =
-          Provider.of<VehicleReadingsProvider>(context, listen: false);
+      final routineProvider = Provider.of<RoutinesProvider>(context, listen: false);
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      final vehicleDetailsProvider = Provider.of<VehicleReadingsProvider>(context, listen: false);
+      final vehicleChecksProvider = Provider.of<VehicleChecksProvider>(context, listen: false); 
 
       getRoutineClickEvent(context, routineProvider, loginProvider, vehicleDetailsProvider);
-    });
-
+      getVehicleChecksClickEvent( context, loginProvider, vehicleChecksProvider);
+    }); 
   }
 
 
@@ -193,7 +189,7 @@ class _VehicleChecksScreenState extends State<VehicleChecksScreen> {
     debugPrint(loginProvider.userDetails.toString());
     final isSuccess = await routineProvider.eitherFailureOrGetRoutines(
         apiToken: loginProvider.userDetails!.apiToken!);
-    print('login data $isSuccess');
+    debugPrint('login data $isSuccess');
     if (!isSuccess) {
       // ignore: use_build_context_synchronously
       showDialog(
@@ -245,11 +241,7 @@ class _VehicleChecksScreenState extends State<VehicleChecksScreen> {
     }
   }
 
-  void getVehicleChecksClickEvent(
-      BuildContext context,
-      LoginProvider loginProvider,
-      VehicleChecksProvider vehicleChecksProvider) async {
-    await vehicleChecksProvider.eitherFailureOrGetVehicleChecks(
-        apiToken: loginProvider.userDetails!.apiToken!);
+  void getVehicleChecksClickEvent( BuildContext context, LoginProvider loginProvider, VehicleChecksProvider vehicleChecksProvider) async {
+      await vehicleChecksProvider.eitherFailureOrGetVehicleChecks(apiToken: loginProvider.userDetails!.apiToken!);
   }
 }

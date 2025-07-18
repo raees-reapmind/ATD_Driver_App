@@ -1,6 +1,7 @@
-import 'dart:async';
-import 'dart:convert';
+import 'dart:async'; 
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+// ignore: library_prefixes
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketService {
@@ -20,16 +21,16 @@ class SocketService {
     _socket!.connect();
 
     _socket!.onConnect((_) {
-      print("[socket-test] ✅ Connected to Socket");
+      debugPrint("[socket-test] ✅ Connected to Socket");
       _startSendingLocation();
     });
 
-    _socket!.onDisconnect((_) => print("[socket-test] ❌ Disconnected from Socket"));
+    _socket!.onDisconnect((_) => debugPrint("[socket-test] ❌ Disconnected from Socket"));
   }
 
   /// Start sending location every 5 seconds
   void _startSendingLocation() async {
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       Position position = await _getCurrentLocation();
       _sendLocation(position.latitude, position.longitude);
     });
@@ -51,7 +52,7 @@ class SocketService {
         "timestamp": DateTime.now().toIso8601String(),
       };
       _socket!.emit("sendLocation", data);
-      print("[socket-test] 📡 Sent: $data");
+      debugPrint("[socket-test] 📡 Sent: $data");
     }
   }
 

@@ -1,9 +1,7 @@
-import 'package:atd/features/login_feature/data/models/user_details.dart';
 import 'package:atd/features/routine_feature/domain/repository/routine_repository.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/errors/failures.dart';
-import '../../data/models/routine.dart';
 
 class StoreVehicleEndLocation {
   final RoutineRepository repository;

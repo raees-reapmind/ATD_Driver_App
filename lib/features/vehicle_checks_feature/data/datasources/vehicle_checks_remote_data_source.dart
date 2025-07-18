@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../utils/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:atd/utils/helper.dart';
 
 
@@ -32,7 +31,7 @@ class VehicleChecksRemoteDataSourceImpl
       getVehicleChecksUrl,
       options: Options(validateStatus: (status) => true),
     );
-    debugPrint('[cache-test] getVehicleChecks token ${apiToken}');
+    debugPrint('[cache-test] getVehicleChecks token $apiToken');
     debugPrint('[cache-test] getVehicleChecks response ${response.data}');
     if (response.statusCode == 200) {
       final responseMap = Map<String, dynamic>.from(response.data);

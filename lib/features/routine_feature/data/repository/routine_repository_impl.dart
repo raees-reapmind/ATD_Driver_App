@@ -6,6 +6,7 @@ import 'package:atd/features/routine_feature/data/models/du_response_data.dart';
 import 'package:atd/features/routine_feature/data/models/routine_details.dart';
 import 'package:atd/features/routine_feature/domain/repository/routine_repository.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/routine.dart';
@@ -24,7 +25,7 @@ class RoutineRepositoryImpl implements RoutineRepository {
   @override
   Future<Either<Failure, RoutineDetails?>>? getRoutines(
       {required String apiToken}) async {
-    print('[api-test] getRoutines called---');
+    debugPrint('[api-test] getRoutines called---');
 
     if (await networkInfo.isConnected!) {
       try {

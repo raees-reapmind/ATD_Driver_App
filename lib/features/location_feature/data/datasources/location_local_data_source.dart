@@ -1,4 +1,4 @@
-import 'package:atd/features/location_feature/data/models/location_model.dart';
+ 
 import 'package:atd/features/location_feature/domain/entities/location.dart';
 import 'package:hive/hive.dart';
 import '../../../../core/errors/exceptions.dart';

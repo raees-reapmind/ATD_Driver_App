@@ -15,6 +15,7 @@ class HomeScreen extends StatelessWidget {
     final navigationProvider = Provider.of<DrawerNavigationProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
     final routineProvider = Provider.of<RoutinesProvider>(context);
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -72,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                                   loginProvider.userDetails!.phoneNo,
                                   style: Theme.of(context)
                                       .textTheme
-                                      .subtitle2
+                                      .titleSmall
                                       ?.copyWith(color: Colors.white60),
                                 ),
                               ],

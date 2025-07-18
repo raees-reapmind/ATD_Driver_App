@@ -2,7 +2,6 @@ import 'package:atd/core/errors/failures.dart';
 import 'package:atd/features/dispenser_checks_feature/data/datasources/dispenser_check_local_data_source.dart';
 import 'package:atd/features/dispenser_checks_feature/data/datasources/dispenser_check_remote_data_source.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../domain/repository/dispenser_check_repository.dart';

@@ -1,7 +1,6 @@
 import 'package:atd/models/product.dart';
 import 'package:atd/providers/stock_out_list_provider.dart';
 import 'package:atd/utils/utils_export.dart';
-import 'package:atd/utils/widgets/stock_transfer_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -73,7 +72,7 @@ class StockOutPage extends StatelessWidget {
                     child: ListTile(
                       title: Text(
                         "Transfer to",
-                        style: Theme.of(context).textTheme.subtitle1,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       trailing: DropdownButton<String>(
                         alignment: AlignmentDirectional.centerEnd,
@@ -96,7 +95,7 @@ class StockOutPage extends StatelessWidget {
                     child: ListTile(
                       title: Text(
                         "Quantity",
-                        style: Theme.of(context).textTheme.subtitle1,
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       trailing: const SizedBox(
                           width: 50,

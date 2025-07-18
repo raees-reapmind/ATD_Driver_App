@@ -76,7 +76,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                         Text(
                           routine.address,
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 10),
                         Visibility(
@@ -181,7 +181,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                         Text(
                           routine.address,
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 10),
                         Visibility(
@@ -286,7 +286,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                         Text(
                           routine.address,
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 10),
                         Visibility(
@@ -395,7 +395,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                         Text(
                           routine.address,
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 10),
                         Visibility(
@@ -503,7 +503,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                         Text(
                           routine.address,
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 10),
                         Visibility(
@@ -609,7 +609,7 @@ class RoutineCard extends StatelessWidget {
                         ),
                         Text(
                           routine.address,
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 10),
                         Visibility(

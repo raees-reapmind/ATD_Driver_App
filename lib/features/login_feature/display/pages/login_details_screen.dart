@@ -17,6 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../utils/utils_export.dart';
 import 'package:intl/intl.dart';
 import '../../../../utils/widgets/failure_dialog.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 
 class LoginDetailsScreen extends StatefulWidget {
@@ -40,6 +41,7 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
 
   double? endTotalizer = 0.0;
   double? finalQty = 0.0;
+  // ignore: non_constant_identifier_names
   int DuConnectCounter = 0;
   int totCount = 0;
   String formattedVlueQty = "";
@@ -61,13 +63,12 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
 
   ////////////////Pallab
   Future<void> checkTOT(int flag, TextEditingController controller) async {
-    print('[api-test] login Check TOT clicked $flag');
+    debugPrint('[api-test] login Check TOT clicked $flag');
 
     final String baseUrl1 = '$mainUrl/api/v1/du-totalizer-readings';
-    final String baseUrl2 = '$mainUrl/api/v1/du-totalizer-readings';
     // Printing the base URL and the full URL with query parameters
-    print('[api-test] CheckTOT url is $baseUrl1');
-    print('[api-test] CheckTOT full URL with parameters is ${Uri.parse(baseUrl1).replace(queryParameters: {'flag': flag.toString()}).toString()}');
+    debugPrint('[api-test] CheckTOT url is $baseUrl1');
+    debugPrint('[api-test] CheckTOT full URL with parameters is ${Uri.parse(baseUrl1).replace(queryParameters: {'flag': flag.toString()}).toString()}');
 
     try {
       final response = await http.get(Uri.parse(baseUrl1).replace(queryParameters: {'flag': flag.toString()}));
@@ -75,28 +76,27 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         final responseData = jsonResponse['response'];
-        print('[api-test] CheckTOT is $responseData');
+        debugPrint('[api-test] CheckTOT is $responseData');
 
         final double totalizerReading = responseData['totalizerReading'];
-        print('[api-test] CheckTOT Totalizer Reading: $totalizerReading');
+        debugPrint('[api-test] CheckTOT Totalizer Reading: $totalizerReading');
 
         // Update the relevant controller
         controller.text = totalizerReading.toStringAsFixed(2);
       } else {
-        print('Failed to load data: ${response.statusCode}');
+        debugPrint('Failed to load data: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
   Future<void> setPreset(int flag, double? quantity) async {
-    print('Set preset called $flag');
+    debugPrint('Set preset called $flag');
     final String baseUrl1 = '$mainUrl/api/v1/du-preset-data-volume';
-    final String baseUrl2 = '$mainUrl/api/v1/du-preset-data-volume';
 
-    print('value: ${flag}');
-    print('Qty : $quantity');
+    debugPrint('value: $flag');
+    debugPrint('Qty : $quantity');
 
     try {
       final response = await dio.post(
@@ -113,7 +113,7 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = response.data;
         final responseData = jsonResponse['response'];
-        print('Set preset response: $responseData');
+        debugPrint('Set preset response: $responseData');
 
         final String description = responseData['description'];
         if (responseData != null) {
@@ -123,10 +123,10 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
           duStatus = description;
         });
       } else {
-        print('Failed to set preset. Status code: ${response.statusCode}');
+        debugPrint('Failed to set preset. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
@@ -181,13 +181,13 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
         setState(() {
           duStatus = description;
         });
-        print('Response from ${response.realUri}: $responseData');
+        debugPrint('Response from ${response.realUri}: $responseData');
       } else {
-        print('Failed to call ${response.realUri}. Status code: ${response.statusCode}');
+        debugPrint('Failed to call ${response.realUri}. Status code: ${response.statusCode}');
       }
     }
   } catch (error) {
-    print('An error occurred: $error');
+    debugPrint('An error occurred: $error');
   }
 }
 
@@ -205,15 +205,15 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
         final Map<String, dynamic> jsonResponse = response.data;
         final responseData = jsonResponse['response'];
         final String description = responseData['description'];
-        print('DU Stop response: $responseData');
+        debugPrint('DU Stop response: $responseData');
         setState(() {
           duStatus = description;
         });
       } else {
-        print('Failed to set preset. Status code: ${response.statusCode}');
+        debugPrint('Failed to set preset. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
@@ -224,6 +224,7 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
@@ -537,10 +538,10 @@ Future<String?> getPlanId() async {
   try {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? planId = prefs.getString('planId'); // Fetch and store the value
-    print('[api-test] getPlanId planId: $planId');
+    debugPrint('[api-test] getPlanId planId: $planId');
     return planId; // Return the fetched ID
   } catch (e) {
-    print('[api-test] SharedPreferences error: $e');
+    debugPrint('[api-test] SharedPreferences error: $e');
     return null; // Return null in case of an error
   }
 }
@@ -551,8 +552,8 @@ Future<String?> getPlanId() async {
       VehicleReadingsProvider vehicleReadingsProvider,
       LoginProvider loginProvider,
       ImageUploadProvider imageUploadProvider) async {
-        print('[api-test] startTripClickEvent called--');
-        print('[api-test]   plan id popup : ${vehicleReadingsProvider?.vehicleReadings?.referenceId}');
+      debugPrint('[api-test] startTripClickEvent called--');
+      debugPrint('[api-test]   plan id popup : ${vehicleReadingsProvider.vehicleReadings?.referenceId}');
 
     await checkTOT(1, totalizerDuLeftController);
     await checkTOT(2, totalizerDuRightController);
@@ -648,7 +649,7 @@ Future<String?> getPlanId() async {
     debugPrint(loginProvider.userDetails.toString());
     final isSuccess = await routineProvider.eitherFailureOrGetRoutines(
         apiToken: loginProvider.userDetails!.apiToken!);
-    print('login data $isSuccess');
+    debugPrint('login data $isSuccess');
     if (!isSuccess) {
       // ignore: use_build_context_synchronously
       showDialog(

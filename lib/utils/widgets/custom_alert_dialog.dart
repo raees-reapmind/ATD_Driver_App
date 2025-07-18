@@ -1,13 +1,9 @@
-import 'dart:io';
 import 'package:atd/core/services/image_picker_service.dart';
 import 'package:atd/features/vehicle_readings_feature/data/models/image_details.dart';
 import 'package:atd/utils/widgets/image_list_view.dart';
-import 'package:atd/utils/widgets/provider_export.dart';
 import 'package:flutter/material.dart';
 import 'package:atd/utils/utils_export.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-import 'image_full_screen_view.dart';
 
 class CustomAlertDialog extends StatefulWidget {
   final String title;
@@ -48,7 +44,6 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final routineProvider = Provider.of<RoutinesProvider>(context);
     return AlertDialog(
       scrollable: true,
       actions: [
@@ -140,7 +135,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
                             children: [
                               const Text("Upload image"),
                               Text(widget.imageContent,
-                                  style: Theme.of(context).textTheme.subtitle2),
+                                  style: Theme.of(context).textTheme.titleSmall),
                             ],
                           ),
                         ),

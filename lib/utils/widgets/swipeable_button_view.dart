@@ -51,6 +51,7 @@ class SwipeableButtonView extends StatefulWidget {
       : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _SwipeableButtonViewState createState() => _SwipeableButtonViewState();
 }
 
@@ -81,7 +82,6 @@ class _SwipeableButtonViewState extends State<SwipeableButtonView>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     setState(() {
@@ -89,9 +89,9 @@ class _SwipeableButtonViewState extends State<SwipeableButtonView>
     });
 
     rippleController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 600));
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
     scaleController =
-    AnimationController(vsync: this, duration: Duration(milliseconds: 800))
+    AnimationController(vsync: this, duration: const Duration(milliseconds: 800))
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           setState(() {
@@ -183,7 +183,7 @@ class _SwipeableButtonViewState extends State<SwipeableButtonView>
                 opacity = value;
               });
             },
-            child: Container(
+            child: SizedBox(
               height: 60.0,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 2.0),
@@ -215,13 +215,13 @@ class _SwipeableButtonViewState extends State<SwipeableButtonView>
                 isAccepted = true;
               });
               _controller.animateTo(1.0,
-                  duration: Duration(milliseconds: 600),
+                  duration: const Duration(milliseconds: 600),
                   curve: Curves.fastOutSlowIn);
             },
           )
               : AnimatedBuilder(
             animation: rippleAnimation,
-            builder: (context, child) => Container(
+            builder: (context, child) => SizedBox(
               width: rippleAnimation.value,
               height: rippleAnimation.value,
               child: AnimatedBuilder(
@@ -234,14 +234,14 @@ class _SwipeableButtonViewState extends State<SwipeableButtonView>
                         color: widget.activeColor.withOpacity(0.4),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.all(4.0),
+                        padding: const EdgeInsets.all(4.0),
                         child: Container(
                             child: Center(
                               child: !isFinishValue
                                   ? CircularProgressIndicator(
                                   valueColor:
                                   widget.indicatorColor)
-                                  : SizedBox(),
+                                  : const SizedBox(),
                             ),
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
