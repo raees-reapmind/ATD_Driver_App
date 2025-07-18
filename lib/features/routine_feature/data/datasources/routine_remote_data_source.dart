@@ -35,7 +35,7 @@ abstract class RoutineRemoteDataSource {
 
   Future<String>? postTransferFromReport(
       {required Routine routine, required String apiToken});
- 
+
   Future<String>? storeVehicleLocationEnd({
     required int vehicleId,
     required int driverId,
@@ -169,7 +169,6 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
   @override
   Future<String>? postDeliveryReport(
       {required Routine routine, required String apiToken}) async {
-
     debugPrint(routine.toDeliveryMap().toString());
 
     String date = routine.toDeliveryMap()['arrived_date_time'];
@@ -192,9 +191,9 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
       data: routine.toDeliveryMap(),
     );
 
-    log('[api-test] postDeliveryReport response: ${response.data}'); 
+    log('[api-test] postDeliveryReport response: ${response.data}');
 
-    final responseMap = Map<String, dynamic>.from(response.data); 
+    final responseMap = Map<String, dynamic>.from(response.data);
 
     if (response.statusCode == 200) {
       debugPrint(responseMap.toString());
@@ -291,7 +290,9 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
     dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
     dio.options.headers['Accept'] = 'application/json';
-
+    debugPrint('[postEndRoutine] routine.id: ${routine.id}');
+    debugPrint(
+        '[postEndRoutine] routine.toEndTripMap: ${routine.toEndTripMap()}');
     final response = await dio.post(
       postEndRoutineUrl,
       options: Options(validateStatus: (status) => true),
@@ -357,10 +358,11 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
 
     debugPrint(responseMap.toString());
 
-   if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
-    return responseMap['message'];
-    }
-  else {
+    if (response.statusCode != null &&
+        response.statusCode! >= 200 &&
+        response.statusCode! < 300) {
+      return responseMap['message'];
+    } else {
       throw ServerException(
           message:
               '[${response.statusCode}] ${responseMap['message'].toString()}');
@@ -381,7 +383,8 @@ class RoutineRemoteDataSourceImpl implements RoutineRemoteDataSource {
     );
 
     debugPrint('[api-test] postRefillReport url : $postRefillReportUrl');
-    debugPrint('[api-test] postRefillReport requsst : ${routine.toRefillMap()}');
+    debugPrint(
+        '[api-test] postRefillReport requsst : ${routine.toRefillMap()}');
 
     final responseMap = Map<String, dynamic>.from(response.data);
 

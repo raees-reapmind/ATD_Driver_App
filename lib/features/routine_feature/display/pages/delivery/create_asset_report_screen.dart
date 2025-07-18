@@ -52,6 +52,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
   int totCount = 0;
   String formattedVlueQty = "";
   Timer? _timer;
+  bool _isSaving = false; // Add this flag
   @override
   void initState() {
     if (widget.routine.assetList == null || widget.routine.assetList!.isEmpty) {
@@ -113,12 +114,10 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
             finalQty = ((endTotalizer ?? 0.0) - (startTotalizer ?? 0.0));
             formattedVlueQty = (finalQty ?? 0.0).toStringAsFixed(2);
             quantityController.text = formattedVlueQty;
-          print('[api-test] checkTOT quantity : ${quantityController.text}');
-
+            print('[api-test] checkTOT quantity : ${quantityController.text}');
           });
           if (flag == 1) {
-          stopDispensing(flag);
-
+            stopDispensing(flag);
           }
         }
         setState(() {
@@ -201,7 +200,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
   }
 
   Future<void> startDispensing(int flag) async {
-   // final String baseUrl1 = '$mainUrl/api/v1/du-start';
+    // final String baseUrl1 = '$mainUrl/api/v1/du-start';
     final String checkTOTURL;
     if (flag == 1) {
       checkTOTURL = '$mainUrl/api/v1/du-start';
@@ -324,7 +323,8 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
 
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
-    final dispenserChecksProvider = Provider.of<DispenserChecksProvider>(context);
+    final dispenserChecksProvider =
+        Provider.of<DispenserChecksProvider>(context);
 
     setState(() {
       quantity = routineProvider.routines[widget.index].quantity;
@@ -371,10 +371,10 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                               );
                             }).toList(),
                             onChanged: (Asset? asset) {
-                              debugPrint('SELECTED ASSET : ${asset.toString()}');
+                              debugPrint(
+                                  'SELECTED ASSET : ${asset.toString()}');
                               setState(() {
                                 dropDownAsset = asset;
-                               
                               });
                             },
                           ),
@@ -423,11 +423,12 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                             //     value: value,
                             //     child: Text(value),
                             //   );
-                             items: dropdownOptions.map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
+                            items: dropdownOptions
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
                             }).toList(),
                           ),
                           // const SizedBox(height: 10),
@@ -468,18 +469,17 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                               ),
                               Expanded(
                                 flex: 3,
-                                child: 
-                              
-                                  CustomTextField(
-                                    controller: quantityController,
-                                    hintText: 'Quantity',
-                                    isNumber: true,
-                                  ),
+                                child: CustomTextField(
+                                  controller: quantityController,
+                                  hintText: 'Quantity',
+                                  isNumber: true,
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 10),
-                          dropDownAsset != null && dropDownAsset!.type == 'vehicle'
+                          dropDownAsset != null &&
+                                  dropDownAsset!.type == 'vehicle'
                               ? CustomTextField(
                                   controller: assetOdometerController,
                                   hintText: 'Enter Asset Odometer',
@@ -547,19 +547,20 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
                           ),
                           const SizedBox(height: 10),
                           CustomButton(
-                            onTap: () => saveClickEvent(
-                              context: context,
-                              asset: dropDownAsset, // Nullable asset
-                              image: image,
-                              // quantity: double.tryParse(formattedVlueQty),
-                              quantity: double.tryParse(quantityController.text.trim()),
-                              imageUploadProvider: imageUploadProvider,
-                              routineProvider: routineProvider,
-                              loginProvider: loginProvider,
-                              index: widget.index,
-                              selctedDu: dropDownFrom
-                            ),
-                            title: "Save",
+                            onTap: _isSaving
+                                ? () {} // No-op function instead of null
+                                : () => saveClickEvent(
+                                    context: context,
+                                    asset: dropDownAsset,
+                                    image: image,
+                                    quantity: double.tryParse(
+                                        quantityController.text.trim()),
+                                    imageUploadProvider: imageUploadProvider,
+                                    routineProvider: routineProvider,
+                                    loginProvider: loginProvider,
+                                    index: widget.index,
+                                    selctedDu: dropDownFrom),
+                            title: _isSaving ? "Saving..." : "Save",
                           )
                         ],
                       ),
@@ -574,44 +575,44 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
     );
   }
 
-  void saveClickEvent({
-    required Asset? asset, // Make asset nullable
-    required double? quantity,
-    required XFile? image,
-    required BuildContext context,
-    required ImageUploadProvider imageUploadProvider,
-    required RoutinesProvider routineProvider,
-    required LoginProvider loginProvider,
-    required int index,
-    String? selctedDu
-  }) async {
+  void saveClickEvent(
+      {required Asset? asset, // Make asset nullable
+      required double? quantity,
+      required XFile? image,
+      required BuildContext context,
+      required ImageUploadProvider imageUploadProvider,
+      required RoutinesProvider routineProvider,
+      required LoginProvider loginProvider,
+      required int index,
+      String? selctedDu}) async {
+    if (_isSaving) return; // Prevent multiple taps
+    setState(() {
+      _isSaving = true;
+    });
+
     asset?.quantity = quantity;
     asset?.subjectType = selctedDu!;
     debugPrint('[api-test] saveClickEvent asset!.quantity ${asset?.quantity}');
     debugPrint('[api-test] saveClickEvent asset!.name ${asset?.name}');
-    // If asset selection is optional, allow proceeding without an asset
     await routineProvider
         .createAssetDelivery(
-      loginProvider: loginProvider,
-      asset: asset, // Pass nullable asset
-      imageUploadProvider: imageUploadProvider,
-      imageList: imageList,
-      index: index,
-      quantity: quantity,
-      selectedDu: selctedDu
-    )
+            loginProvider: loginProvider,
+            asset: asset,
+            imageUploadProvider: imageUploadProvider,
+            imageList: imageList,
+            index: index,
+            quantity: quantity,
+            selectedDu: selctedDu)
         .then((result) {
+      setState(() {
+        _isSaving = false;
+      });
       switch (result) {
         case Result.quantityFormat:
           showSnackBar(
               context: context,
               message: "Please enter a valid quantity format");
           break;
-        // case Result.quantityGreater:
-        //   showSnackBar(
-        //       context: context,
-        //       message: "Quantity is greater than the order quantity");
-        //   break;
         case Result.image:
           showSnackBar(
               context: context,
