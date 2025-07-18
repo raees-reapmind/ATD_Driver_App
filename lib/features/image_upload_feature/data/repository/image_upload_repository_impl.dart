@@ -2,7 +2,6 @@ import 'package:atd/core/errors/failures.dart';
 import 'package:atd/features/image_upload_feature/data/datasources/image_upload_remote_data_source.dart';
 import 'package:atd/features/image_upload_feature/domain/repository/image_upload_repository.dart';
 import 'package:dartz/dartz.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/connection/network_info.dart';
 import '../../../../core/errors/exceptions.dart';

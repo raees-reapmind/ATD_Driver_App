@@ -5,7 +5,6 @@ import 'package:atd/features/location_feature/display/provider/location_provider
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
 import 'package:atd/features/routine_feature/display/providers/routines_provider.dart';
 import 'package:atd/features/vehicle_checks_feature/display/provider/vehicle_checks_provider.dart';
-import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_details_provider.dart';
 import 'package:atd/utils/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -27,9 +26,9 @@ void showSnackBar({required BuildContext context, required String message}) {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('planId', planId.toString());
-      print('[api-test] Saved planId: $planId');
+      debugPrint('[api-test] Saved planId: $planId');
     } catch (e) {
-      print('[api-test] savePlanId SharedPreferences error: $e');
+      debugPrint('[api-test] savePlanId SharedPreferences error: $e');
     }
   }
 
@@ -37,10 +36,10 @@ Future<String?> getPlanId() async {
   try {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? planId = prefs.getString('planId'); 
-    print('[api-test] getPlanId planId: $planId');
+    debugPrint('[api-test] getPlanId planId: $planId');
     return planId; 
   } catch (e) {
-    print('[api-test] getPlanId SharedPreferences error: $e');
+    debugPrint('[api-test] getPlanId SharedPreferences error: $e');
     return null; 
   }
 }
@@ -121,25 +120,25 @@ Future<void> checkAndRedirect(int currentVehicleId, BuildContext context) async 
 void startLocationUpdates(LoginProvider loginProvider,RoutinesProvider routineProvider) {
   
   if (_locationTimer != null && _locationTimer!.isActive) {
-    print("[time-test] Location updates already running");
+    debugPrint("[time-test] Location updates already running");
     return;
   }
 
-  _locationTimer = Timer.periodic(Duration(seconds: 45), (timer) {
-    print("[time-test] Calling API...");
+  _locationTimer = Timer.periodic(const Duration(seconds: 45), (timer) {
+    debugPrint("[time-test] Calling API...");
     LocationProvider locationProvider = LocationProvider();
     locationProvider.sendLocationToServer(apiToken: loginProvider.userDetails!.apiToken!,routineProvider: routineProvider);
   });
 
-  print("[time-test] Location updates started");
+  debugPrint("[time-test] Location updates started");
 }
 
 void stopLocationUpdates() {
-    print("[time-test] stopLocationUpdates called---");
+    debugPrint("[time-test] stopLocationUpdates called---");
   if (_locationTimer != null) {
     _locationTimer!.cancel();
     _locationTimer = null;
-    print("[time-test] Location updates stopped");
+    debugPrint("[time-test] Location updates stopped");
   }
 }
 

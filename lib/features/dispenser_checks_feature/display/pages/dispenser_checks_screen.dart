@@ -1,4 +1,3 @@
-import 'package:atd/core/errors/failures.dart';
 import 'package:atd/features/home_navigation_feature/display/pages/home_screen.dart';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
 import 'package:atd/features/login_feature/display/provider/login_provider.dart';
@@ -138,7 +137,7 @@ class _DispenserChecksScreenState extends State<DispenserChecksScreen> {
     debugPrint(loginProvider.userDetails.toString());
     final isSuccess = await routineProvider.eitherFailureOrGetRoutines(
         apiToken: loginProvider.userDetails!.apiToken!);
-    print('login data $isSuccess');
+    debugPrint('login data $isSuccess');
     if (!isSuccess) {
       // ignore: use_build_context_synchronously
       showDialog(

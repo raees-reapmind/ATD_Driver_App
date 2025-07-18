@@ -30,7 +30,7 @@ class VehicleReadingsProvider extends ChangeNotifier {
     bool isSuccess = false;
     final result = await repository.postVehicleDetails(
         apiToken: apiToken, vehicleReadings: vehicleReadings!);
-        print('[api-test] eitherFailureOrPostVehicleDetails result $result');
+        debugPrint('[api-test] eitherFailureOrPostVehicleDetails result $result');
     result?.fold((newFailure) {
       failure = newFailure;
       notifyListeners();
@@ -55,7 +55,7 @@ class VehicleReadingsProvider extends ChangeNotifier {
     );
     bool isSuccess = true;
     final result = await repository.getVehicleDetails(apiToken: apiToken);
-        print('[api-test] eitherFailureOrGetVehicleDetails result $result');
+        debugPrint('[api-test] eitherFailureOrGetVehicleDetails result $result');
 
     result?.fold((newFailure) {
       failure = newFailure;

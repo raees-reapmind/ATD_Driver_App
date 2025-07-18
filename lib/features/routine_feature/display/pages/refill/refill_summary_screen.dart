@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -14,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
 import '../../providers/routines_provider.dart';
-import 'package:path_provider/path_provider.dart';
 
 class RefillSummaryScreen extends StatelessWidget {
   final int index;
@@ -189,9 +187,11 @@ class RefillSummaryScreen extends StatelessWidget {
                                     imageUploadProvider!.eitherFailureOrUploadImage(imagePath: imagePath, apiToken: apiToken),
                               );
                             } else {
+                              // ignore: use_build_context_synchronously
                               showSnackBar(context: context, message: 'Failed to process signature');
                             }
                           } else {
+                            // ignore: use_build_context_synchronously
                             showSnackBar(context: context, message: 'No signature found');
                           }
 
@@ -203,13 +203,17 @@ class RefillSummaryScreen extends StatelessWidget {
                       routineProvider.routines[index].recieverName = managerNameController.text;
                       routineProvider.notifyDataChange();
 
+                      // ignore: use_build_context_synchronously
                       showSnackBar(context: context, message: 'Signature Saved');
+                      // ignore: use_build_context_synchronously
                       Navigator.of(context).pop();
                     } else {
+                      // ignore: use_build_context_synchronously
                       showSnackBar(context: context, message: 'Image upload failed');
                     }
                   } catch (e) {
                     debugPrint("Error saving image: $e");
+                    // ignore: use_build_context_synchronously
                     showSnackBar(context: context, message: 'Error processing signature');
                   }
                 } else {

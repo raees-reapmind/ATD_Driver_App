@@ -108,7 +108,7 @@ class _CreateManualDispenserState extends State<CreateManualDispenser> {
                           ListTile(
                             title: Text(
                               "Dispenser",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             trailing: DropdownButton<String>(
                               alignment: AlignmentDirectional.centerEnd,
@@ -136,7 +136,7 @@ class _CreateManualDispenserState extends State<CreateManualDispenser> {
                           ListTile(
                             title: Text(
                               "Asset",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             trailing: DropdownButton<String>(
                               alignment: AlignmentDirectional.centerEnd,
@@ -166,7 +166,7 @@ class _CreateManualDispenserState extends State<CreateManualDispenser> {
                           ListTile(
                             title: Text(
                               "Quantity Selected",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             trailing: SizedBox(
                                 width: 50,
@@ -178,7 +178,7 @@ class _CreateManualDispenserState extends State<CreateManualDispenser> {
                           ListTile(
                             title: Text(
                               "Quantity Dispensed",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             trailing: SizedBox(
                                 width: 50,
@@ -190,7 +190,7 @@ class _CreateManualDispenserState extends State<CreateManualDispenser> {
                           ListTile(
                             title: Text(
                               "Upload image",
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                             subtitle: const Text(
                                 "Kindly upload the images of totalizer or receipt"),

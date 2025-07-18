@@ -2,7 +2,6 @@ import 'package:atd/features/routine_feature/data/models/plan_details.dart';
 import 'package:atd/features/routine_feature/data/models/product_details.dart';
 import 'package:atd/features/routine_feature/data/models/routine.dart';
 import 'package:atd/features/routine_feature/data/models/vehicle_details.dart';
-import '../../../vehicle_readings_feature/data/models/vehicle_details.dart';
 
 class RoutineDetails {
   VehicleDetails vehicleDetails;

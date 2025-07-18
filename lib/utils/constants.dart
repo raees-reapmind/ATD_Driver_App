@@ -11,8 +11,7 @@ const getOtpUrl = '$mainUrl/api/driver/login';
 const mainUrl = 'https://phpstack-906681-5029380.cloudwaysapps.com';// Dev Url
 
 // build test
-
-// const mainUrl = 'https://uat.anytimediesel.com';// Prod Url
+ 
 // const mainUrl = 'https://phpstack-906681-5115782.cloudwaysapps.com'; // dev url CODE MERGE
 
 //  code merge - consumer app

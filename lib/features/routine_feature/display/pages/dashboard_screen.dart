@@ -18,10 +18,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../utils/utils_export.dart';
 import '../../data/models/routine.dart';
 import '../widgets/routine_card_new.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:atd/features/login_feature/data/models/session_stage.dart';
@@ -47,12 +49,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final routineProvider =
-          Provider.of<RoutinesProvider>(context, listen: false);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final routineProvider = Provider.of<RoutinesProvider>(context, listen: false);
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      routineProvider.eitherFailureOrGetRoutines(
-          apiToken: loginProvider.userDetails!.apiToken!);
+      routineProvider.eitherFailureOrGetRoutines(apiToken: loginProvider.userDetails!.apiToken!);
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      bool isTripStarted = prefs.getBool('trip_started') ?? false; 
+      if (isTripStarted) {
+        startLocationUpdates(loginProvider, routineProvider);
+      }
     });
     super.initState();
   }
@@ -200,7 +206,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void startArrivedClickEvent(BuildContext context, Routine routine, int index,
       RoutinesProvider routineProvider, LoginProvider loginProvider) {
-    print('[trip-test] startArrivedClickEvent called---');
+    debugPrint('[trip-test] startArrivedClickEvent called---');
 
     showDialog(
       barrierDismissible: false,
@@ -220,7 +226,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             routineProvider.routines[index].startTotalizerDuRight =
                 double.tryParse(totalizerDuRightController.text.toString());
 
-            print(
+            debugPrint(
                 '[data-test] startArrivedClickEvent Odometer: ${odometerController.text} DU Left: ${totalizerDuLeftController.text} DU Right: ${totalizerDuRightController.text}');
 
             await routineProvider
@@ -230,6 +236,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 .then((isSuccess) {
               if (isSuccess) {
                 startLocationUpdates(loginProvider, routineProvider);
+                stopLocationUpdatesOfInit(true);
                 clearTextFields([
                   odometerController,
                   totalizerDuLeftController,
@@ -265,7 +272,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       int index,
       RoutinesProvider routineProvider,
       LoginProvider loginProvider) async {
-    print('[trip-test] transferArrivedClickEvent called---');
+    debugPrint('[trip-test] transferArrivedClickEvent called---');
 
     showLoading();
     // await checkTOT(1, totalizerDuLeftController);
@@ -324,7 +331,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           position.longitude;
                       routineProvider.notifyDataChange();
                       stopLocationUpdates();
-                      print(
+                      debugPrint(
                           '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
                       Navigator.of(context).push(MaterialPageRoute(
@@ -412,7 +419,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   position.longitude;
                               routineProvider.notifyDataChange();
                               stopLocationUpdates();
-                              print(
+                              debugPrint(
                                   '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
                               Navigator.of(context).push(MaterialPageRoute(
@@ -464,7 +471,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       int index,
       RoutinesProvider routineProvider,
       LoginProvider loginProvider) async {
-    print('[trip-test] transferFromArriverdClickEvent called---');
+    debugPrint('[trip-test] transferFromArriverdClickEvent called---');
 
     showLoading();
     // await checkTOT(1, totalizerDuLeftController);
@@ -521,7 +528,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     position.longitude;
                                 routineProvider.notifyDataChange();
                                 stopLocationUpdates();
-                                print(
+                                debugPrint(
                                     '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -559,6 +566,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           );
 
           // Navigator.of(context).pop();
+          // ignore: use_build_context_synchronously
           Navigator.of(context).push(MaterialPageRoute(
               builder: ((context) => TransferFromScreen(
                     index: index,
@@ -609,7 +617,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     position.longitude;
                                 routineProvider.notifyDataChange();
                                 stopLocationUpdates();
-                                print(
+                                debugPrint(
                                     '[data-test] transferArrivedClickEvent Odometer: ${routineProvider.routines[index].odometerReading} DU Left: ${routineProvider.routines[index].startTotalizerDuLeft} DU Right: ${routineProvider.routines[index].startTotalizerDuRight} time: ${routineProvider.routines[index].arrivedDatetime}');
 
                                 Navigator.of(context).push(MaterialPageRoute(
@@ -643,6 +651,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  void stopLocationUpdatesOfInit(bool isStart) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();  
+      prefs.setBool('trip_started', isStart); 
+  }
+
   void endArrivedClickEvent(
       BuildContext context,
       Routine routine,
@@ -650,7 +663,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       RoutinesProvider routineProvider,
       LoginProvider loginProvider,
       ImageUploadProvider imageUploadProvider) {
-    print('[click-test] endArrivedClickEvent');
+    debugPrint('[click-test] endArrivedClickEvent');
 
     List<ImageDetails> imageList = [];
     showDialog(
@@ -705,6 +718,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   totalizerDuLeftController,
                   totalizerDuRightController
                 ]);
+                stopLocationUpdatesOfInit(false);
                 logOutClickEvent(context, loginProvider);
                 // Navigator.of(context).pop();
 
@@ -752,6 +766,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 });
               } catch (e) {
                 clearTextFields([odometerController]);
+                // ignore: use_build_context_synchronously
                 showSnackBar(context: context, message: e.toString());
               }
             },
@@ -826,7 +841,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 // //  // final Dio dio = Dio();
 
   Future<void> checkTOT(int flag, TextEditingController controller) async {
-    print('[trip-test] dashboard Check TOT clicked $flag');
+    debugPrint('[trip-test] dashboard Check TOT clicked $flag');
 
     final String baseUrl1 = '$mainUrl/api/v1/du-totalizer-readings';
     final String baseUrl2 = '$mainUrl/api/v1/gvr-du-totalizer-readings';
@@ -838,18 +853,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> jsonResponse = json.decode(response.body);
         final responseData = jsonResponse['response'];
-        print('CheckTOT is $responseData');
+        debugPrint('CheckTOT is $responseData');
 
         final double totalizerReading = responseData['totalizerReading'];
-        print('Totalizer Reading: $totalizerReading');
+        debugPrint('Totalizer Reading: $totalizerReading');
 
         // Update the relevant controller
         controller.text = totalizerReading.toStringAsFixed(2);
       } else {
-        print('Failed to load data: ${response.statusCode}');
+        debugPrint('Failed to load data: ${response.statusCode}');
       }
     } catch (error) {
-      print('An error occurred: $error');
+      debugPrint('An error occurred: $error');
     }
   }
 
@@ -873,7 +888,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // await checkTOT(1, totalizerDuLeftController);
     // await checkTOT(2, totalizerDuRightController);
 
-    print('[click-test] deliveryArrivedClickEvent');
+    debugPrint('[click-test] deliveryArrivedClickEvent');
 
     bool permission = await Geolocator.isLocationServiceEnabled();
     if (!permission) {
@@ -1066,7 +1081,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
 void _showOutOfRangePopup() {
-  print('Error msg is coming');
+  debugPrint('Error msg is coming');
   Fluttertoast.cancel();
   Fluttertoast.showToast(
     msg:
@@ -1113,13 +1128,13 @@ Future<bool> checkAccuracy(double lat, double long) async {
     desiredLongitude,
   );
 
-  print('[loc-test] lat:${currentPosition.latitude}');
-  print('[loc-test] long:${currentPosition.longitude}');
-  print('[loc-test] distance:${distance}');
+  debugPrint('[loc-test] lat:${currentPosition.latitude}');
+  debugPrint('[loc-test] long:${currentPosition.longitude}');
+  debugPrint('[loc-test] distance:$distance');
 
   double accuracyDifference = distance - desiredAccuracy;
   desiredDifference.value = accuracyDifference;
-  print('[loc-test] lat:$accuracyDifference');
+  debugPrint('[loc-test] lat:$accuracyDifference');
 
   if (distance > desiredAccuracy) {
     // The current position is outside the desired accuracy range
@@ -1127,7 +1142,7 @@ Future<bool> checkAccuracy(double lat, double long) async {
     return false;
   } else {
     // The current position is within the desired accuracy range
-    print("Within the desired accuracy range");
+    debugPrint("Within the desired accuracy range");
     return true;
   }
 }

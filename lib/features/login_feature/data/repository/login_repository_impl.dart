@@ -29,7 +29,7 @@ class LoginRepositoryImpl implements LoginRepository {
       try {
         final response =
             await remoteDataSource.getOtp(userDetails: userDetails);
-            print('[otp-test] getOtp: $response');
+            debugPrint('[otp-test] getOtp: $response');
         if (response != null) {
           //details are valid
           return Right(response);

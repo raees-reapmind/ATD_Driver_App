@@ -1,14 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:atd/features/dispenser_checks_feature/display/pages/dispenser_checks_screen.dart';
-import 'package:atd/features/login_feature/display/pages/login_details_screen.dart';
-import 'package:atd/features/routine_feature/display/pages/dashboard_screen.dart';
-import 'package:atd/features/vehicle_checks_feature/display/pages/vehicle_checks_screen.dart';
-import 'package:atd/utils/utils_export.dart';
-import 'package:dio/dio.dart';
-import 'package:get/get.dart' ;
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io'; 
+import 'package:dio/dio.dart'; 
+import 'package:flutter/material.dart'; 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../utils/constants.dart';
 import '../models/user_details.dart';
@@ -34,8 +27,8 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
       getOtpUrl,
       data: json.encode(userDetails.toMap()),
     );
-      print('[api-test] getOtpUrl url : ${json.encode(userDetails.toMap())}');
-      print('[api-test] getOtpUrl request: ${json.encode(userDetails.toMap())}');
+      debugPrint('[api-test] getOtpUrl url : ${json.encode(userDetails.toMap())}');
+      debugPrint('[api-test] getOtpUrl request: ${json.encode(userDetails.toMap())}');
     
     if (response.statusCode == 200) {
       debugPrint(response.data.toString());

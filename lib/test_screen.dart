@@ -1,4 +1,3 @@
-import 'package:atd/utils/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_swipe_button/flutter_swipe_button.dart';

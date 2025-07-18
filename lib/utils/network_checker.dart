@@ -34,7 +34,7 @@ class NetworkChecker {
     final context = navigatorKey?.currentContext;
     
     if (context == null || _dialogShown) return; // Avoid showing dialog if context is null or dialog is already shown
-    debugPrint('context == null || _dialogShown: ${context == null || _dialogShown}');
+    debugPrint('context == null || _dialogShown: $_dialogShown');
     _dialogShown = true;
 
     showDialog(
@@ -70,7 +70,7 @@ class NetworkChecker {
                 child: Text(
                   'Please check your network connection and try again.',
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.black54,
                       ),
                 ),

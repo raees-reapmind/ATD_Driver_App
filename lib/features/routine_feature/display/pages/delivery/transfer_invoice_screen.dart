@@ -6,10 +6,7 @@ import 'package:atd/features/image_upload_feature/display/providers/image_upload
 import 'package:atd/features/vehicle_readings_feature/data/models/image_details.dart';
 import 'package:atd/utils/signature_helper.dart';
 import 'package:atd/utils/utils_export.dart';
-import 'package:atd/utils/widgets/camera_button.dart';
 import 'package:atd/utils/widgets/failure_dialog.dart';
-import 'package:atd/utils/widgets/routine_info_alert_dialog.dart';
-import 'package:atd/utils/widgets/signature_button.dart';
 import 'package:atd/utils/widgets/signature_pad_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
@@ -20,7 +17,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../login_feature/display/provider/login_provider.dart';
 import '../../providers/routines_provider.dart';
 import '../../widgets/title_content.dart';
-import 'package:atd/utils/helper.dart';
 
 class TransferInvoiceScreen extends StatefulWidget {
   final int index;
@@ -44,8 +40,7 @@ class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
   @override
   Widget build(BuildContext context) {
     final routineProvider = Provider.of<RoutinesProvider>(context);
-    final loginProvider = Provider.of<LoginProvider>(context);
-    final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
+    final loginProvider = Provider.of<LoginProvider>(context); 
     return Scaffold(
       body: Stack(
         children: [
@@ -221,9 +216,11 @@ class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
                       imageUploadProvider.eitherFailureOrUploadImage(imagePath: imagePath, apiToken: apiToken),
                 );
               } else {
+                // ignore: use_build_context_synchronously
                 showSnackBar(context: context, message: 'Failed to process signature');
               }
             } else {
+              // ignore: use_build_context_synchronously
               showSnackBar(context: context, message: 'No signature found');
             }
 
@@ -233,9 +230,12 @@ class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
               routineProvider.routines[index].recieverName = receiverNameController.text.toString();
               routineProvider.notifyDataChange();
 
+              // ignore: use_build_context_synchronously
               showSnackBar(context: context, message: 'Signature Saved');
+              // ignore: use_build_context_synchronously
               Navigator.of(context).pop();
             } else {
+              // ignore: use_build_context_synchronously
               showSnackBar(context: context, message: 'Image upload failed');
             }
          
@@ -250,8 +250,8 @@ class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
       RoutinesProvider routineProvider, int index) async {
     routineProvider.routines[index].endDateTime = DateTime.now();
 
-    print('[id-test] ${routineProvider.routines[index].toDeliveryMap()}');
-
+    debugPrint('[id-test] ${routineProvider.routines[index].toDeliveryMap()}');
+  
     await routineProvider.eitherFailureOrPostTransferReport(
             apiToken: loginProvider.userDetails!.apiToken!,
             routine: routineProvider.routines[index])
@@ -304,11 +304,14 @@ class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
         routineProvider.routines[index].imageList = [
           ImageDetails(image: image, imageId: imageId, imagePath: image.path)
         ];
+        // ignore: use_build_context_synchronously
         showSnackBar(context: context, message: 'Image Attached');
       } else {
+        // ignore: use_build_context_synchronously
         showSnackBar(context: context, message: 'Failed to upload image');
       }
     } else {
+      // ignore: use_build_context_synchronously
       showSnackBar(context: context, message: 'Failed to capture image');
     }
   }
@@ -316,9 +319,10 @@ class _TransferInvoiceScreenState extends State<TransferInvoiceScreen> {
 
 Future<void> openAnotherApp() async {
   // Replace "exampleapp://" with the actual deep link or scheme of the app you want to open
-  final String deepLink = "csi://app/EastmanDecantActivity?order_no=1224&order_qty=10&otp=1234&rfid_tag=";
+  const String deepLink = "csi://app/EastmanDecantActivity?order_no=1224&order_qty=10&otp=1234&rfid_tag=";
 
   // Check if the app is installed
+  // ignore: deprecated_member_use
   if (await canLaunch(deepLink)) {
     // Use the deep link to open the app
     await launchUrl(Uri.parse(deepLink));

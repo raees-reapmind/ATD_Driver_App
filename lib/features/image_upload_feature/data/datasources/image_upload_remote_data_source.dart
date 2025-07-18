@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:atd/core/errors/exceptions.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/cupertino.dart'; 
 import '../../../../utils/constants.dart';
 
 abstract class ImageUploadRemoteDataSource {

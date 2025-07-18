@@ -213,7 +213,7 @@ class RoutinesProvider extends ChangeNotifier {
 
     debugPrint('[api-test] createAssetDelivery asset: ${asset?.name}');
     debugPrint('[api-test] createAssetDelivery q: ${asset?.quantity}');
-    debugPrint('[api-test] createAssetDelivery selectedDu: ${selectedDu}');
+    debugPrint('[api-test] createAssetDelivery selectedDu: $selectedDu');
 
     imageList.forEach((element) {
         debugPrint('[api-test] createAssetDelivery image: ${element.imageId}');
@@ -585,7 +585,7 @@ Future<bool> eitherFailureOrPostEndRoutine({
 
   Future<bool> eitherFailureOrGetBill(
       {required String apiToken, required int index}) async {
-        print('[api-test] eitherFailureOrGetBill called---');
+        debugPrint('[api-test] eitherFailureOrGetBill called---');
     RoutineRepositoryImpl repository = RoutineRepositoryImpl(
       remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
       localDataSource:

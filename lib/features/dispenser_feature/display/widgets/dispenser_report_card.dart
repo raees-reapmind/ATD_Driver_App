@@ -26,7 +26,7 @@ class DispenserReportCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium),
               Text(
                 dispenserReport.dispenserName,
-                style: Theme.of(context).textTheme.subtitle2,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
           ),
@@ -37,7 +37,7 @@ class DispenserReportCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium),
               Text(
                 dispenserReport.assetId.toString(),
-                style: Theme.of(context).textTheme.subtitle2,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
           ),
@@ -48,7 +48,7 @@ class DispenserReportCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium),
               Text(
                 "${dispenserReport.quantitySelected.toString()} L",
-                style: Theme.of(context).textTheme.subtitle2,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
           ),
@@ -59,7 +59,7 @@ class DispenserReportCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium),
               Text(
                 "${dispenserReport.quantityDispensed.toString()} L",
-                style: Theme.of(context).textTheme.subtitle2,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
           ),

@@ -23,14 +23,14 @@ class TitleContent extends StatelessWidget {
               title,
             ),
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           Expanded(
             child: Text(
               textAlign: TextAlign.end,
               content,
               style: isBold
                   ? const TextStyle(fontWeight: FontWeight.bold)
-                  : Theme.of(context).textTheme.subtitle2,
+                  : Theme.of(context).textTheme.titleSmall,
             ),
           ),
         ],

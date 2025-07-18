@@ -88,10 +88,10 @@ class DispenserCheckRemoteDataSourceImpl
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       String? planId = prefs.getString('planId'); // Fetch and store the value
-      print('[api-test] getPlanId planId: $planId');
+      debugPrint('[api-test] getPlanId planId: $planId');
       return planId; // Return the fetched ID
     } catch (e) {
-      print('[api-test] SharedPreferences error: $e');
+      debugPrint('[api-test] SharedPreferences error: $e');
       return null; // Return null in case of an error
     }
   }

@@ -51,7 +51,7 @@ class _RefuelSideTankScreenState extends State<RefuelSideTankScreen> {
                               const Text("Vehicle Reg No"),
                               Text(
                                 "MH02GG1234",
-                                style: Theme.of(context).textTheme.subtitle2,
+                                style: Theme.of(context).textTheme.titleSmall,
                               ),
                             ],
                           ),
@@ -79,7 +79,7 @@ class _RefuelSideTankScreenState extends State<RefuelSideTankScreen> {
                                     Text("Kindly upload the images of receipt",
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subtitle2),
+                                            .titleSmall),
                                   ],
                                 ),
                               ),
