@@ -50,12 +50,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final routineProvider = Provider.of<RoutinesProvider>(context, listen: false);
+      final routineProvider =
+          Provider.of<RoutinesProvider>(context, listen: false);
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      routineProvider.eitherFailureOrGetRoutines(apiToken: loginProvider.userDetails!.apiToken!);
+      routineProvider.eitherFailureOrGetRoutines(
+          apiToken: loginProvider.userDetails!.apiToken!);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      bool isTripStarted = prefs.getBool('trip_started') ?? false; 
+      bool isTripStarted = prefs.getBool('trip_started') ?? false;
+      print('Trip started: $isTripStarted');
       if (isTripStarted) {
         startLocationUpdates(loginProvider, routineProvider);
       }
@@ -652,8 +655,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void stopLocationUpdatesOfInit(bool isStart) async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();  
-      prefs.setBool('trip_started', isStart); 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('trip_started', isStart);
   }
 
   void endArrivedClickEvent(

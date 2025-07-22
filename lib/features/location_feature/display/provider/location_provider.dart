@@ -7,6 +7,7 @@ import 'package:atd/features/location_feature/data/repository/location_repositor
 import 'package:atd/features/location_feature/domain/entities/location.dart';
 import 'package:atd/features/routine_feature/data/models/vehicle_details.dart';
 import 'package:atd/features/routine_feature/display/providers/routines_provider.dart';
+import 'package:atd/utils/helper.dart';
 import 'package:data_connection_checker_tv/data_connection_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,8 +19,6 @@ import 'dart:convert';
 
 import '../../../../core/errors/exceptions.dart';
 
-
-
 class LocationProvider extends ChangeNotifier {
   Location? _location;
   Failure? _failure;
@@ -29,7 +28,7 @@ class LocationProvider extends ChangeNotifier {
 
   Failure? get failure => _failure;
 
-  void add({required Location location}){
+  void add({required Location location}) {
     locationList.add(location);
     notifyListeners();
   }
@@ -57,42 +56,50 @@ class LocationProvider extends ChangeNotifier {
     });
   }
 
+  Future<String> sendLocationToServer({
+    required String apiToken,
+    required RoutinesProvider routineProvider,
+    required String address,
+    required String planId
+  }) async {
+    Position position = await _determinePosition();
+    final Dio dio = Dio();
 
+    // VehicleDetails? vehicleDetails = VehicleManager().vehicleDetails;
+    // debugPrint('[loc-test] vehicleDetails id: ${vehicleDetails?.id}');
 
-Future<String> sendLocationToServer({required String apiToken,required RoutinesProvider routineProvider}) async {
-  Position position = await _determinePosition();
-  final Dio dio = Dio();
+    dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
+    dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
+    dio.options.headers['Accept'] = 'application/json';
+    String? planId = await getPlanId();
 
-  // VehicleDetails? vehicleDetails = VehicleManager().vehicleDetails;
-  // debugPrint('[loc-test] vehicleDetails id: ${vehicleDetails?.id}'); 
+    Map<String, dynamic> data = {
+      "latitude": position.latitude,
+      "longitude": position.longitude,
+      "address": address,
+      "route_plans_id": planId,
+    };
 
-  dio.options.headers[HttpHeaders.contentTypeHeader] = 'application/json';
-  dio.options.headers[HttpHeaders.authorizationHeader] = 'Bearer $apiToken';
-  dio.options.headers['Accept'] = 'application/json';
+    debugPrint("[loc-test] Sending Location: $data");
+    debugPrint(
+        "[loc-test] Sending Location URL : ${'$mainUrl/api/app/v2/vehicles/${routineProvider.vehicleDetails?.id}/locations'}");
 
-  Map<String, dynamic> data = {
-    "latitude": position.latitude,
-    "longitude": position.longitude,
-  };
-  
-  debugPrint("[loc-test] Sending Location: $data");
-  debugPrint("[loc-test] Sending Location URL : ${'$mainUrl/api/app/v2/vehicles/${routineProvider.vehicleDetails?.id}/locations'}");
+    var response = await dio.post(
+      '$mainUrl/api/app/v2/vehicles/${routineProvider.vehicleDetails?.id}/locations',
+      options: Options(validateStatus: (status) => true),
+      data: jsonEncode(data),
+    );
 
-  var response = await dio.post(
-    '$mainUrl/api/app/v2/vehicles/${routineProvider.vehicleDetails?.id}/locations',
-    options: Options(validateStatus: (status) => true),
-    data: jsonEncode(data),
-  );
+    final responseMap = response.data;
+    debugPrint(responseMap.toString());
 
-  final responseMap = response.data;
-  debugPrint(responseMap.toString());
-
-  if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
-    return responseMap['message'] ?? "Success";
+    if (response.statusCode != null &&
+        response.statusCode! >= 200 &&
+        response.statusCode! < 300) {
+      return responseMap['message'] ?? "Success";
+    }
+    throw ServerException();
   }
-  throw ServerException();
-}
-
 
   /// Gets the current location
   Future<Position> _determinePosition() async {
@@ -115,9 +122,7 @@ Future<String> sendLocationToServer({required String apiToken,required RoutinesP
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
   }
-
 }
-
 
 class VehicleManager {
   static final VehicleManager _instance = VehicleManager._internal();
