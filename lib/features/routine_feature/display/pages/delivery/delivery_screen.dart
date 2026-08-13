@@ -22,12 +22,14 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
   final totalizerDuLeftController = TextEditingController();
   final totalizerDuRightController = TextEditingController();
   final  odometerController = TextEditingController();
+  bool _isSavingBill = false;
 
 
   @override
   Widget build(BuildContext context) {
     final routineProvider = Provider.of<RoutinesProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
+    print('DeliveryScreen.....');
     return Scaffold(
       body: Stack(
         children: [
@@ -198,16 +200,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                                               loginProvider),
                                           title: 'Finish')),
                                   const SizedBox(width: 10),
-                                  FloatingActionButton(
-                                    onPressed: () => Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: ((context) =>
-                                              CreateAssetReportScreen(
-                                                routine: routineProvider
-                                                    .routines[widget.index],
-                                                index: widget.index,
-                                              ))),
-                                    ),
+                                  FloatingActionButton(onPressed: () => Navigator.of(context).push( MaterialPageRoute( builder: ((context) => CreateAssetReportScreen( routine: routineProvider.routines[widget.index], index: widget.index,))),),
                                   child: const Icon(Icons.add,color: Colors.white  ),
                                   )
                                 ],
@@ -244,6 +237,10 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
           final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
 
           if (totalizerDuLeftReading != null && totalizerDuRightReading != null) {
+            if (_isSavingBill) return;
+            setState(() {
+              _isSavingBill = true;
+            });
 
             routineProvider.routines[index].end_odometer = odometerReading;
             routineProvider.routines[index].endTotalizerDuLeft = totalizerDuLeftReading;
@@ -254,25 +251,27 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
             debugPrint('routineProvider.routines[index].endQuantity: ${routineProvider.routines[index].endQuantity}');
             debugPrint('routineProvider.routines[index].quantity != routineProvider.routines[index].endQuantity: ${routineProvider.routines[index].quantity != routineProvider.routines[index].endQuantity}');
             
-            // if (routineProvider.routines[index].quantity != routineProvider.routines[index].endQuantity) {
-
-              await calculateBill(routineProvider, context, loginProvider, index)
-                  .then((isSuccess) {
-                for (AdditionCharge additionCharge in routineProvider.routines[index].additionalChargesList ?? []) {
-                  if (additionCharge.breakUpType == 'total_payable_bill') {
-                    routineProvider.routines[index].endPrice = additionCharge.value;
-                    break;
-                  }
+            try {
+              final isSuccess = await calculateBill(routineProvider, context, loginProvider, index);
+              for (AdditionCharge additionCharge in routineProvider.routines[index].additionalChargesList ?? []) {
+                if (additionCharge.breakUpType == 'total_payable_bill') {
+                  routineProvider.routines[index].endPrice = additionCharge.value;
+                  break;
                 }
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: ((context) =>
-                        DeliveryInvoiceScreen(index: index))));
-              });
-            // } else {
-            //   routineProvider.routines[index].endPrice = routineProvider.routines[index].price;
-            //   Navigator.of(context).push(MaterialPageRoute(
-            //       builder: ((context) => DeliveryInvoiceScreen(index: index))));
-            // }
+              }
+              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: ((context) =>
+                      DeliveryInvoiceScreen(index: index))));
+            } catch (e) {
+              showSnackBar(context: context, message: e.toString());
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _isSavingBill = false;
+                });
+              }
+            }
           }
         },
         onTapCancel: () => Navigator.of(context).pop(),

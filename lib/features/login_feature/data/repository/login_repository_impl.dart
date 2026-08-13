@@ -37,11 +37,22 @@ class LoginRepositoryImpl implements LoginRepository {
           //details are invalid
           return Right(response.toString());
         }
-      } on DioError catch (errorMessage) {
-        debugPrint(errorMessage.response.toString());
-        return Left(ServerFailure(
-            errorMessage:
-                json.decode(errorMessage.response.toString())['message']));
+      } on DioError catch (error) {
+        debugPrint('DioError on getOtp [URL: ${error.requestOptions.uri}]: $error');
+        debugPrint('Request body: ${error.requestOptions.data}');
+        if (error.response != null) {
+          debugPrint('Response data: ${error.response?.data}');
+          try {
+            final responseString = error.response.toString();
+            final decoded = json.decode(responseString);
+            if (decoded is Map && decoded.containsKey('message')) {
+              return Left(ServerFailure(errorMessage: decoded['message'].toString()));
+            }
+          } catch (e) {
+            debugPrint('Error parsing response body: $e');
+          }
+        }
+        return Left(ServerFailure(errorMessage: error.message ?? 'Server error occurred'));
       } on ServerException catch (errorMessage) {
         return Left(ServerFailure(errorMessage: errorMessage.toString()));
       }
@@ -75,11 +86,22 @@ class LoginRepositoryImpl implements LoginRepository {
           //details are invalid
           return Right(response);
         }
-      } on DioError catch (errorMessage) {
-        debugPrint(errorMessage.response.toString());
-        return Left(ServerFailure(
-            errorMessage:
-                json.decode(errorMessage.response.toString())['message']));
+      } on DioError catch (error) {
+        debugPrint('DioError on putOtp [URL: ${error.requestOptions.uri}]: $error');
+        debugPrint('Request body: ${error.requestOptions.data}');
+        if (error.response != null) {
+          debugPrint('Response data: ${error.response?.data}');
+          try {
+            final responseString = error.response.toString();
+            final decoded = json.decode(responseString);
+            if (decoded is Map && decoded.containsKey('message')) {
+              return Left(ServerFailure(errorMessage: decoded['message'].toString()));
+            }
+          } catch (e) {
+            debugPrint('Error parsing response body: $e');
+          }
+        }
+        return Left(ServerFailure(errorMessage: error.message ?? 'Server error occurred'));
       } on ServerException catch (errorMessage) {
         return Left(ServerFailure(errorMessage: errorMessage.toString()));
       }

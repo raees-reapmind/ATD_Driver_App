@@ -7,15 +7,15 @@ import 'package:get/get.dart';
 const duUrl = 'http://192.168.202.155:8001';
 //const mainUrl = 'http://3.110.218.28'; // new live
 // const mainUrl = 'https://oms.anytimediesel.com';// Prod Url
+const mainUrl = 'https://uat.anytimediesel.com';// uat Url
 const getOtpUrl = '$mainUrl/api/driver/login';
-const mainUrl = 'https://phpstack-906681-5029380.cloudwaysapps.com';// Dev Url
+// const mainUrl = 'https://phpstack-906681-5029380.cloudwaysapps.com';// Dev Url
 
 // build test
  
 // const mainUrl = 'https://phpstack-906681-5115782.cloudwaysapps.com'; // dev url CODE MERGE
 
-//  code merge - consumer app
-// middleware: 'https://uat.anytimediesel.com/api', // uat
+//  code merge - consumer app 
 
 
 const putOtpUrl = '$mainUrl/api/otp';

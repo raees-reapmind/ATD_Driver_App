@@ -362,6 +362,7 @@ class RoutinesProvider extends ChangeNotifier {
     // if (currentQuantity + quantity > routines[index].quantity!) {
     //   return Result.quantityGreater;
     // }
+    debugPrint('[api-test] createBill called....');
     int? imageId = await imageUploadProvider.eitherFailureOrUploadImage(
         imagePath: image.imagePath!,
         apiToken: loginProvider.userDetails!.apiToken!);
@@ -445,6 +446,7 @@ Future<bool> eitherFailureOrPostEndRoutine({
   required int vehicleId,
   required int index,
 }) async {
+  debugPrint('[api-test] eitherFailureOrPostEndRoutine called.....');
   RoutineRepositoryImpl repository = RoutineRepositoryImpl(
     remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
     localDataSource:
@@ -537,6 +539,7 @@ Future<bool> eitherFailureOrPostEndRoutine({
     );
     bool isSuccess = true;
     isLoading = true;
+    debugPrint('[api-test] eitherFailureOrPostRefillReport called....');
     final result = await PostRefillReport(repository: repository)
         .call(apiToken: apiToken, routine: routine);
     result?.fold((newFailure) {
@@ -558,6 +561,7 @@ Future<bool> eitherFailureOrPostEndRoutine({
 
   Future<bool> eitherFailureOrPostDeliveryReport(
       {required String apiToken, required Routine routine}) async {
+        debugPrint('[api-test] eitherFailureOrPostDeliveryReport called---');
     RoutineRepositoryImpl repository = RoutineRepositoryImpl(
       remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
       localDataSource:
@@ -668,17 +672,14 @@ Future<bool> eitherFailureOrPostEndRoutine({
   }
 
 
-  Future<bool> updateReachedAt(
-      {required String apiToken, required Routine routine}) async {
+  Future<bool> updateReachedAt( {required String apiToken, required Routine routine}) async {
     RoutineRepositoryImpl repository = RoutineRepositoryImpl(
       remoteDataSource: RoutineRemoteDataSourceImpl(dio: Dio()),
-      localDataSource:
-          RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
+      localDataSource: RoutineLocalDataSourceImpl(routinesBox: DatabaseHelper().routinesBox),
       networkInfo: NetworkInfoImpl(connectionChecker: DataConnectionChecker()),
     );
     bool isSuccess = true;
-    final result = await UpdateReacheadAt(repository: repository)
-        .call(apiToken: apiToken, routine: routine);
+    final result = await UpdateReacheadAt(repository: repository).call(apiToken: apiToken, routine: routine);
     result?.fold((newFailure) {
       message = newFailure.errorMessage;
       debugPrint(newFailure.errorMessage);

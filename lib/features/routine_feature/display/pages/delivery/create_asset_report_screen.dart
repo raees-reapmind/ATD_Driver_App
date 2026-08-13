@@ -323,6 +323,7 @@ class _CreateAssetReportScreenState extends State<CreateAssetReportScreen> {
 
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
+    print('CreateAssetReportScreen.....');
 
     setState(() {
       quantity = routineProvider.routines[widget.index].quantity;

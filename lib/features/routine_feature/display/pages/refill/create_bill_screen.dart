@@ -25,6 +25,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   final quantityController = TextEditingController();
   final assetOdometerController = TextEditingController();
   ImageDetails? image;
+  bool _isSavingBill = false;
 
   @override
   Widget build(BuildContext context) {
@@ -140,14 +141,19 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
       required RoutinesProvider routinesProvider,
       required ImageUploadProvider imageUploadProvider,
       ImageDetails? image}) async {
-    await routinesProvider
-        .createBill(
-            loginProvider: loginProvider,
-            image: image,
-            imageUploadProvider: imageUploadProvider,
-            index: index,
-            quantity: quantity)
-        .then((result) {
+    if (_isSavingBill) return;
+    setState(() {
+      _isSavingBill = true;
+    });
+
+    try {
+      final result = await routinesProvider.createBill(
+          loginProvider: loginProvider,
+          image: image,
+          imageUploadProvider: imageUploadProvider,
+          index: index,
+          quantity: quantity);
+
       switch (result) {
         case Result.quantityFormat:
           showSnackBar(
@@ -171,7 +177,15 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           Navigator.of(context).pop();
           break;
       }
-    });
+    } catch (e) {
+      showSnackBar(context: context, message: e.toString());
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSavingBill = false;
+        });
+      }
+    }
   }
 
   Widget imageView() {

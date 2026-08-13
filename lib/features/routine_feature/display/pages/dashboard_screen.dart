@@ -46,6 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       TextEditingController();
   XFile? image;
   int count = 0;
+  bool _isSavingArrived = false;
 
   @override
   void initState() {
@@ -222,6 +223,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         totalizerDuRightController: totalizerDuRightController,
         onTapSave: () async {
           if (odometerController.text.isNotEmpty) {
+            if (_isSavingArrived) return;
+            setState(() {
+              _isSavingArrived = true;
+            });
+
             routineProvider.routines[index].odometerReading =
                 double.tryParse(odometerController.text.toString());
             routineProvider.routines[index].startTotalizerDuLeft =
@@ -232,11 +238,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             debugPrint(
                 '[data-test] startArrivedClickEvent Odometer: ${odometerController.text} DU Left: ${totalizerDuLeftController.text} DU Right: ${totalizerDuRightController.text}');
 
-            await routineProvider
-                .eitherFailureOrPostStartRoutine(
-                    apiToken: loginProvider.userDetails!.apiToken!,
-                    routine: routineProvider.routines[index])
-                .then((isSuccess) {
+            try {
+              final isSuccess = await routineProvider.eitherFailureOrPostStartRoutine(
+                  apiToken: loginProvider.userDetails!.apiToken!,
+                  routine: routineProvider.routines[index]);
               if (isSuccess) {
                 startLocationUpdates(loginProvider, routineProvider);
                 stopLocationUpdatesOfInit(true);
@@ -245,16 +250,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   totalizerDuLeftController,
                   totalizerDuRightController
                 ]);
-                routineProvider
-                    .eitherFailureOrGetRoutines(
-                        apiToken: loginProvider.userDetails!.apiToken!)
-                    .whenComplete(() => Navigator.of(context).pop());
+                await routineProvider.eitherFailureOrGetRoutines(
+                    apiToken: loginProvider.userDetails!.apiToken!);
+                Navigator.of(context).pop();
               } else {
-                FailureDialog(
-                  content: routineProvider.failure!.errorMessage.toString(),
+                showDialog(
+                  context: context,
+                  builder: (context) => FailureDialog(
+                    content: routineProvider.failure != null
+                        ? routineProvider.failure!.errorMessage.toString()
+                        : '',
+                  ),
                 );
               }
-            });
+            } catch (e) {
+              showSnackBar(context: context, message: e.toString());
+            } finally {
+              if (mounted) {
+                setState(() {
+                  _isSavingArrived = false;
+                });
+              }
+            }
           }
         },
         onTapCancel: () {
@@ -685,20 +702,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         odometerController: odometerController,
         onTapSave: () async {
-          routineProvider
-              .submitEndRoutine(
-            index: index,
-            loginProvider: loginProvider,
-            imageUploadProvider: imageUploadProvider,
-            imageList: imageList,
-            odometerReading:
-                double.tryParse(odometerController.text.toString()),
-            totalizerDuLeft:
-                double.tryParse(totalizerDuLeftController.text.toString()),
-            totalizerDuRight:
-                double.tryParse(totalizerDuRightController.text.toString()),
-          )
-              .then((response) {
+          if (_isSavingArrived) return;
+          setState(() {
+            _isSavingArrived = true;
+          });
+
+          try {
+            final response = await routineProvider.submitEndRoutine(
+              index: index,
+              loginProvider: loginProvider,
+              imageUploadProvider: imageUploadProvider,
+              imageList: imageList,
+              odometerReading:
+                  double.tryParse(odometerController.text.toString()),
+              totalizerDuLeft:
+                  double.tryParse(totalizerDuLeftController.text.toString()),
+              totalizerDuRight:
+                  double.tryParse(totalizerDuRightController.text.toString()),
+            );
+
             switch (response) {
               case Response.nullData:
                 showSnackBar(
@@ -722,12 +744,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   totalizerDuRightController
                 ]);
                 stopLocationUpdatesOfInit(false);
+                Navigator.of(context).pop();
                 logOutClickEvent(context, loginProvider);
-                // Navigator.of(context).pop();
-
                 break;
             }
-          });
+          } catch (e) {
+            showSnackBar(context: context, message: e.toString());
+          } finally {
+            if (mounted) {
+              setState(() {
+                _isSavingArrived = false;
+              });
+            }
+          }
         },
         onTapCancel: () {
           Navigator.of(context).pop();
@@ -745,32 +774,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
             isOdometer: true,
             odometerController: odometerController,
             onTapSave: () async {
+              if (_isSavingArrived) return;
+              setState(() {
+                _isSavingArrived = true;
+              });
+
               routineProvider.routines[index].odometerReading =
-                  double.parse(odometerController.text.toString());
+                  double.tryParse(odometerController.text.toString()) ?? 0.0;
               routineProvider.routines[index].arrivedDatetime = DateTime.now();
-              // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
 
               try {
-                await LocationService().determinePosition().then((position) {
-                  routineProvider.routines[index].endLatitude =
-                      position.latitude;
-                  routineProvider.routines[index].endLongitude =
-                      position.longitude;
-                  stopLocationUpdates();
-                  clearTextFields([odometerController]);
-                  Navigator.of(context).pop();
-                  routineProvider.updateReachedAt(
-                      apiToken: loginProvider.userDetails!.apiToken!,
-                      routine: routineProvider.routines[index]);
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: ((context) => RefillScreen(
-                            index: index,
-                          ))));
-                });
+                final position = await LocationService().determinePosition();
+                routineProvider.routines[index].endLatitude = position.latitude;
+                routineProvider.routines[index].endLongitude = position.longitude;
+                stopLocationUpdates();
+                
+                await routineProvider.updateReachedAt(
+                    apiToken: loginProvider.userDetails!.apiToken!,
+                    routine: routineProvider.routines[index]);
+                
+                clearTextFields([odometerController]);
+                Navigator.of(context).pop();
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: ((context) => RefillScreen(
+                          index: index,
+                        ))));
               } catch (e) {
                 clearTextFields([odometerController]);
-                // ignore: use_build_context_synchronously
                 showSnackBar(context: context, message: e.toString());
+              } finally {
+                if (mounted) {
+                  setState(() {
+                    _isSavingArrived = false;
+                  });
+                }
               }
             },
             onTapCancel: () {
@@ -905,7 +942,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (count <= 2) {
       hideLoading();
       if (isWithinAccuracy) {
-        // if (routineProvider.planDetails?.id == 1) {
         // ignore: use_build_context_synchronously
         showDialog(
           context: context,
@@ -918,6 +954,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               totalizerDuLeftController: totalizerDuLeftController,
               totalizerDuRightController: totalizerDuRightController,
               onTapSave: () async {
+                print('Save Clicked');
                 final odometerReading =
                     double.tryParse(odometerController.text.toString());
                 final totalizerDuLeftReading =
@@ -927,45 +964,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 if (odometerReading != null &&
                     totalizerDuLeftReading != null &&
                     totalizerDuRightReading != null) {
-                  routineProvider.routines[index].odometerReading =
-                      odometerReading;
-                  routineProvider.routines[index].startTotalizerDuLeft =
-                      totalizerDuLeftReading;
-                  routineProvider.routines[index].startTotalizerDuRight =
-                      totalizerDuRightReading;
-                  routineProvider.routines[index].arrivedDatetime =
-                      DateTime.now();
-                  // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-                  debugPrint(
-                      'routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
+                  if (_isSavingArrived) return;
+                  setState(() {
+                    _isSavingArrived = true;
+                  });
+
+                  routineProvider.routines[index].odometerReading = odometerReading;
+                  routineProvider.routines[index].startTotalizerDuLeft = totalizerDuLeftReading;
+                  routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
+                  routineProvider.routines[index].arrivedDatetime = DateTime.now();
+                  debugPrint('routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
 
                   try {
-                    await LocationService()
-                        .determinePosition()
-                        .then((position) {
-                      routineProvider.routines[index].endLatitude =
-                          position.latitude;
-                      routineProvider.routines[index].endLongitude =
-                          position.longitude;
-                      routineProvider.notifyDataChange();
-                      stopLocationUpdates();
-                      routineProvider.updateReachedAt(
-                          apiToken: loginProvider.userDetails!.apiToken!,
-                          routine: routineProvider.routines[index]);
-                      clearTextFields([
-                        odometerController,
-                        totalizerDuLeftController,
-                        totalizerDuRightController
-                      ]);
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: ((context) => DeliveryScreen(
-                                index: index,
-                              ))));
-                    });
+                    final position = await LocationService().determinePosition();
+                    routineProvider.routines[index].endLatitude = position.latitude;
+                    routineProvider.routines[index].endLongitude = position.longitude;
+                    routineProvider.notifyDataChange();
+                    stopLocationUpdates();
+                    await routineProvider.updateReachedAt(apiToken: loginProvider.userDetails!.apiToken!, routine: routineProvider.routines[index]);
+                    clearTextFields([odometerController, totalizerDuLeftController, totalizerDuRightController]);
+                    
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DeliveryScreen(index: index))));
                   } catch (e) {
-                    // ignore: use_build_context_synchronously
                     showSnackBar(context: context, message: e.toString());
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        _isSavingArrived = false;
+                      });
+                    }
                   }
                 }
               },
@@ -993,9 +1021,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           context: context,
           builder: (context) {
             return CustomAlertDialog(
-              title:
-                  'You have not reached delivery location. Do you want to proceed with delivery?',
+              title: 'You have not reached delivery location. Do you want to proceed with delivery?',
               onTapSave: () async {
+                // Pop the outer warning dialog first
+                Navigator.of(context).pop();
+                
                 showDialog(
                   context: context,
                   builder: (context) {
@@ -1007,56 +1037,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       totalizerDuLeftController: totalizerDuLeftController,
                       totalizerDuRightController: totalizerDuRightController,
                       onTapSave: () async {
-                        final odometerReading =
-                            double.tryParse(odometerController.text.toString());
-                        final totalizerDuLeftReading = double.tryParse(
-                            totalizerDuLeftController.text.toString());
-                        final totalizerDuRightReading = double.tryParse(
-                            totalizerDuRightController.text.toString());
-                        if (odometerReading != null &&
-                            totalizerDuLeftReading != null &&
-                            totalizerDuRightReading != null) {
-                          routineProvider.routines[index].odometerReading =
-                              odometerReading;
-                          routineProvider.routines[index].startTotalizerDuLeft =
-                              totalizerDuLeftReading;
-                          routineProvider.routines[index]
-                              .startTotalizerDuRight = totalizerDuRightReading;
-                          routineProvider.routines[index].arrivedDatetime =
-                              DateTime.now();
-                          // routineProvider.routines[index].arrivedDatetime = getCurrentTimeWithoutMilliseconds();
-                          debugPrint(
-                              'routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
+                        print('Save clicked 2');
+                        final odometerReading = double.tryParse(odometerController.text.toString());
+                        final totalizerDuLeftReading = double.tryParse(totalizerDuLeftController.text.toString());
+                        final totalizerDuRightReading = double.tryParse(totalizerDuRightController.text.toString());
+                        if (odometerReading != null && totalizerDuLeftReading != null && totalizerDuRightReading != null) {
+                          if (_isSavingArrived) return;
+                          setState(() {
+                            _isSavingArrived = true;
+                          });
+
+                          routineProvider.routines[index].odometerReading = odometerReading;
+                          routineProvider.routines[index].startTotalizerDuLeft = totalizerDuLeftReading;
+                          routineProvider.routines[index].startTotalizerDuRight = totalizerDuRightReading;
+                          routineProvider.routines[index].arrivedDatetime = DateTime.now();
+                          debugPrint('routineProvider.routines[index].arrivedDatetime: ${routineProvider.routines[index].arrivedDatetime}');
 
                           try {
-                            await LocationService()
-                                .determinePosition()
-                                .then((position) {
-                              routineProvider.routines[index].endLatitude =
-                                  position.latitude;
-                              routineProvider.routines[index].endLongitude =
-                                  position.longitude;
-                              routineProvider.notifyDataChange();
-                              stopLocationUpdates();
-                              routineProvider.updateReachedAt(
-                                  apiToken:
-                                      loginProvider.userDetails!.apiToken!,
-                                  routine: routineProvider.routines[index]);
-                              clearTextFields([
-                                odometerController,
-                                totalizerDuLeftController,
-                                totalizerDuRightController
-                              ]);
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: ((context) => DeliveryScreen(
-                                        index: index,
-                                      ))));
-                            });
+                            final position = await LocationService().determinePosition();
+                            routineProvider.routines[index].endLatitude = position.latitude;
+                            routineProvider.routines[index].endLongitude = position.longitude;
+                            routineProvider.notifyDataChange();
+                            stopLocationUpdates();
+                            await routineProvider.updateReachedAt(apiToken: loginProvider.userDetails!.apiToken!, routine: routineProvider.routines[index]);
+                            clearTextFields([odometerController, totalizerDuLeftController, totalizerDuRightController]);
+                            
+                            Navigator.of(context).pop();
+                            Navigator.of(context).push(MaterialPageRoute(builder: ((context) => DeliveryScreen(index: index))));
                           } catch (e) {
-                            // ignore: use_build_context_synchronously
-                            showSnackBar(
-                                context: context, message: e.toString());
+                            showSnackBar(context: context, message: e.toString());
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isSavingArrived = false;
+                              });
+                            }
                           }
                         }
                       },

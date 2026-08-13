@@ -27,7 +27,7 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
       getOtpUrl,
       data: json.encode(userDetails.toMap()),
     );
-      debugPrint('[api-test] getOtpUrl url : ${json.encode(userDetails.toMap())}');
+      debugPrint('[api-test] getOtpUrl url : $getOtpUrl');
       debugPrint('[api-test] getOtpUrl request: ${json.encode(userDetails.toMap())}');
     
     if (response.statusCode == 200) {

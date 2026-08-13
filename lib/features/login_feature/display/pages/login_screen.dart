@@ -241,9 +241,14 @@ class _LoginScreenState extends State<LoginScreen> {
     required String otp,
     required LoginProvider provider,
   }) async {
+    debugPrint('LOGIN_FLOW: loginClickEvent triggered');
+    debugPrint('LOGIN_FLOW: Inputs -> phoneNo: $phoneNo, vehicleRegNo: $vehicleRegNo, otp: $otp');
+
     final deviceName = await DeviceInfoPlugin()
         .deviceInfo
         .then((info) => info.data['product'].toString());
+    debugPrint('LOGIN_FLOW: deviceName: $deviceName');
+
     //todo verify otp and add the api key
     provider.userDetails = UserDetails(
         phoneNo: phoneNo,
@@ -252,49 +257,56 @@ class _LoginScreenState extends State<LoginScreen> {
         otp: otp,
         deviceName: deviceName);
 
+    debugPrint('LOGIN_FLOW: Calling eitherFailureOrPutOtp...');
     await provider.eitherFailureOrPutOtp().whenComplete(() {
+      debugPrint('LOGIN_FLOW: eitherFailureOrPutOtp completed');
+      debugPrint('LOGIN_FLOW: User Details is null? ${provider.userDetails == null}');
+      debugPrint('LOGIN_FLOW: Failure: ${provider.failure?.errorMessage}');
+      debugPrint('LOGIN_FLOW: Response message: ${provider.response}');
+
       if (provider.userDetails != null && provider.failure == null) {
+        debugPrint('LOGIN_FLOW: Login successful. Session stage changing to loginDetails...');
         provider.userDetails?.sessionStage = SessionStage.loginDetails;
         provider.changeSessionStage(sessionStage: SessionStage.loginDetails);
-        // Navigator.of(context).push(MaterialPageRoute(
-        //   builder: (context) => const LoginDetailsScreen(),
-        // ));
 
-      debugPrint('step-----${provider.userDetails?.step}');
+        debugPrint('LOGIN_FLOW: User step: ${provider.userDetails?.step}');
 
-      //331
-
-      if (provider.userDetails?.step != null) {
-
+        if (provider.userDetails?.step != null) {
           switch (provider.userDetails?.step) {
-            case 0: 
+            case 0:
+              debugPrint('LOGIN_FLOW: Navigating to LoginDetailsScreen (step 0)');
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const LoginDetailsScreen(),
               ));
               break;
-            case 1:  
+            case 1:
+              debugPrint('LOGIN_FLOW: Navigating to VehicleChecksScreen (step 1)');
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const VehicleChecksScreen(),
               ));
               break;
-            case 2: 
+            case 2:
+              debugPrint('LOGIN_FLOW: Navigating to DispenserChecksScreen (step 2)');
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const DispenserChecksScreen(),
               ));
               break;
-            case 3  : 
-             Navigator.of(context).push(MaterialPageRoute(
+            case 3:
+              debugPrint('LOGIN_FLOW: Navigating to HomeScreen (step 3)');
+              Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const HomeScreen(),
-              )); 
+              ));
               break;
-            default: 
+            default:
+              debugPrint('LOGIN_FLOW: Unknown step ${provider.userDetails?.step}');
           }
-       
+        } else {
+          debugPrint('LOGIN_FLOW: User step is null, no navigation performed');
         }
-
+      } else {
+        debugPrint('LOGIN_FLOW: Login failed or userDetails is null');
       }
     });
-
   }
 
   void getOtpClickEvent(
@@ -302,11 +314,21 @@ class _LoginScreenState extends State<LoginScreen> {
       required phoneNo,
       required vehicleRegNo,
       required LoginProvider provider}) async {
+    debugPrint('LOGIN_FLOW: getOtpClickEvent triggered');
+    debugPrint('LOGIN_FLOW: Inputs -> phoneNo: $phoneNo, vehicleRegNo: $vehicleRegNo');
+
     provider.userDetails = UserDetails(
       phoneNo: phoneNo,
       vehicleRegNo: vehicleRegNo,
       dateTime: DateTime.now(),
     );
+
+    debugPrint('LOGIN_FLOW: Calling eitherFailureOrGetOtp...');
     await provider.eitherFailureOrGetOtp();
+
+    debugPrint('LOGIN_FLOW: eitherFailureOrGetOtp completed');
+    debugPrint('LOGIN_FLOW: User Details is null? ${provider.userDetails == null}');
+    debugPrint('LOGIN_FLOW: Failure: ${provider.failure?.errorMessage}');
+    debugPrint('LOGIN_FLOW: Response message: ${provider.response}');
   }
 }

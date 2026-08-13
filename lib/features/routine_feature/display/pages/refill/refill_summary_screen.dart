@@ -14,12 +14,20 @@ import 'package:provider/provider.dart';
 import 'package:flutter_signature_pad/flutter_signature_pad.dart';
 import '../../providers/routines_provider.dart';
 
-class RefillSummaryScreen extends StatelessWidget {
+class RefillSummaryScreen extends StatefulWidget {
   final int index;
   const RefillSummaryScreen({Key? key, required this.index}) : super(key: key);
 
   @override
+  State<RefillSummaryScreen> createState() => _RefillSummaryScreenState();
+}
+
+class _RefillSummaryScreenState extends State<RefillSummaryScreen> {
+  bool _isFinishing = false;
+
+  @override
   Widget build(BuildContext context) {
+    final index = widget.index;
     final routineProvider = Provider.of<RoutinesProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
@@ -226,14 +234,19 @@ class RefillSummaryScreen extends StatelessWidget {
 
   void finishClickEvent(BuildContext context, LoginProvider loginProvider,
       RoutinesProvider routineProvider, int index) async {
+    if (_isFinishing) return;
+    setState(() {
+      _isFinishing = true;
+    });
+
     routineProvider.routines[index].endDateTime = DateTime.now();
     
-    await routineProvider
-        .eitherFailureOrPostRefillReport(
-            apiToken: loginProvider.userDetails!.apiToken!,
-            routine: routineProvider.routines[index])
-        .then((isSuccess) {
+    try {
+      final isSuccess = await routineProvider.eitherFailureOrPostRefillReport(
+          apiToken: loginProvider.userDetails!.apiToken!,
+          routine: routineProvider.routines[index]);
       if (!isSuccess) {
+        // ignore: use_build_context_synchronously
         showDialog(
           context: context,
           builder: (context) => FailureDialog(
@@ -242,11 +255,23 @@ class RefillSummaryScreen extends StatelessWidget {
         );
       } else {
         startLocationUpdates(loginProvider, routineProvider);
-        routineProvider
-            .eitherFailureOrGetRoutines(
-                apiToken: loginProvider.userDetails!.apiToken!)
-            .then((value) => Navigator.of(context).pushNamed('/dashboard'));
+        await routineProvider.eitherFailureOrGetRoutines(
+            apiToken: loginProvider.userDetails!.apiToken!);
+        Navigator.of(context).pushNamed('/dashboard');
       }
-    });
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => FailureDialog(
+          content: e.toString(),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFinishing = false;
+        });
+      }
+    }
   }
 }

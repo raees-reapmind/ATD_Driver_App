@@ -32,6 +32,7 @@ class DeliveryInvoiceScreen extends StatefulWidget {
 
 class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
   final TextEditingController receiverNameController = TextEditingController();
+  bool _isFinishing = false;
 
   final router = GoRouter(routes: [
 
@@ -41,6 +42,7 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('DeliveryInvoiceScreen....');
     final routineProvider = Provider.of<RoutinesProvider>(context);
     final loginProvider = Provider.of<LoginProvider>(context);
     final imageUploadProvider = Provider.of<ImageUploadProvider>(context);
@@ -309,33 +311,37 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
 
   void finishClickEvent(BuildContext context, LoginProvider loginProvider,
       RoutinesProvider routineProvider, int index) async {
+    if (_isFinishing) return;
+    setState(() {
+      _isFinishing = true;
+    });
+
     routineProvider.routines[index].endDateTime = DateTime.now();
 
-    await routineProvider.eitherFailureOrPostDeliveryReport(
-            apiToken: loginProvider.userDetails!.apiToken!,
-            routine: routineProvider.routines[index])
-        .then((value) async {
+    try {
+      final value = await routineProvider.eitherFailureOrPostDeliveryReport(
+          apiToken: loginProvider.userDetails!.apiToken!,
+          routine: routineProvider.routines[index]);
       if (value) {
-        await routineProvider
-            .eitherFailureOrGetRoutines(
-                apiToken: loginProvider.userDetails!.apiToken!)
-            .then((isSuccess) {
-          if (isSuccess) {
-            // stopLocationUpdates();
-             startLocationUpdates(loginProvider,routineProvider);
-            Navigator.of(context).pushNamed('/dashboard');
-          } else {
-            showDialog(
-              context: context,
-              builder: (context) => FailureDialog(
-                content: routineProvider.failure != null
-                    ? routineProvider.failure!.errorMessage.toString()
-                    : '',
-              ),
-            );
-          }
-        });
+        final isSuccess = await routineProvider.eitherFailureOrGetRoutines(
+            apiToken: loginProvider.userDetails!.apiToken!);
+        if (isSuccess) {
+          // stopLocationUpdates();
+          startLocationUpdates(loginProvider, routineProvider);
+          Navigator.of(context).pushNamed('/dashboard');
+        } else {
+          // ignore: use_build_context_synchronously
+          showDialog(
+            context: context,
+            builder: (context) => FailureDialog(
+              content: routineProvider.failure != null
+                  ? routineProvider.failure!.errorMessage.toString()
+                  : '',
+            ),
+          );
+        }
       } else {
+        // ignore: use_build_context_synchronously
         showDialog(
           context: context,
           builder: (context) => FailureDialog(
@@ -345,7 +351,20 @@ class _DeliveryInvoiceScreenState extends State<DeliveryInvoiceScreen> {
           ),
         );
       }
-    });
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder: (context) => FailureDialog(
+          content: e.toString(),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFinishing = false;
+        });
+      }
+    }
   }
 
   void receiptClickEvent(
