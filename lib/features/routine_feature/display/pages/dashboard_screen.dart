@@ -877,7 +877,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // }
 
 /////////Amita
-  String mainUrl = "http://192.168.202.155:8001";
+  // String mainUrl = "http://192.168.202.155:8001";
 // //  // final Dio dio = Dio();
 
   Future<void> checkTOT(int flag, TextEditingController controller) async {

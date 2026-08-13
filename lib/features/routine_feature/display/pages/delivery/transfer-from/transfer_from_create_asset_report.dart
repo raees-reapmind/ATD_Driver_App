@@ -5,6 +5,7 @@ import 'package:atd/features/image_upload_feature/display/providers/image_upload
 import 'package:atd/features/routine_feature/data/models/asset.dart';
 import 'package:atd/features/routine_feature/data/models/routine.dart';
 import 'package:atd/features/vehicle_readings_feature/data/models/image_details.dart';
+import 'package:atd/utils/constants.dart';
 import 'package:atd/utils/widgets/image_full_screen_view.dart';
 import 'package:atd/utils/widgets/provider_export.dart';
 import 'package:dio/dio.dart';
@@ -38,7 +39,7 @@ class _TransferFromCreateAssetReportScreenState extends State<TransferFromCreate
   var duStatus = "Status";
   bool isButtonsDisabled = true;
   int retryCount = 0;
-  String mainUrl = "http://192.168.202.155:8001";
+  // String mainUrl = "http://192.168.202.155:8001";
   final Dio dio = Dio();
   int totValue = 0;
   bool setPresetenabled = false;

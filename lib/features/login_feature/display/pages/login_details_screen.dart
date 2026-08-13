@@ -9,6 +9,7 @@ import 'package:atd/features/vehicle_checks_feature/display/pages/vehicle_checks
 import 'package:atd/features/vehicle_readings_feature/data/models/image_details.dart';
 import 'package:atd/features/vehicle_readings_feature/data/models/vehicle_details.dart';
 import 'package:atd/features/vehicle_readings_feature/display/providers/vehicle_details_provider.dart';
+import 'package:atd/utils/constants.dart';
 import 'package:atd/utils/widgets/custom_alert_dialog.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,8 @@ class _LoginDetailsScreenState extends State<LoginDetailsScreen> {
   final TextEditingController totalizerDuLeftController = TextEditingController();
   final TextEditingController totalizerDuRightController = TextEditingController();
   // String mainUrl = "http://192.168.202.155:8001";
-  String mainUrl = "https://phpstack-906681-5029380.cloudwaysapps.com";
+  // String mainUrl = "https://phpstack-906681-5029380.cloudwaysapps.com";
+  
   var duStatus = "Status";
   double? startTotalizer = 0.0;
   final Dio dio = Dio();
