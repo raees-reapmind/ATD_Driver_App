@@ -167,18 +167,27 @@ class RoutinesProvider extends ChangeNotifier {
     //   routines[index].assetsReport.add(asset);
     // }
 
-   Asset newAsset = Asset(
-    id: generateYYYYMMDDHHMMSSUniqueId(),
-    name: asset!.name, // Force unwrap (will throw an error if null)
-    type: asset!.type,
-    qrCode: asset!.qrCode,
-    quantity: asset!.quantity,
-    capacity: asset!.capacity,
-    endQuantity: quantity,
-    odometer: asset!.odometer,
-    receiptImage: asset!.receiptImage,
-    subjectType: asset!.subjectType
-  );
+    final Asset activeAsset = asset ?? Asset(
+      id: null,
+      name: 'NA',
+      type: 'NA',
+      qrCode: 'NA',
+      quantity: 0,
+      subjectType: selectedDu,
+    );
+
+    Asset newAsset = Asset(
+      id: activeAsset.id ?? generateYYYYMMDDHHMMSSUniqueId(),
+      name: activeAsset.name,
+      type: activeAsset.type,
+      qrCode: activeAsset.qrCode,
+      quantity: activeAsset.quantity,
+      capacity: activeAsset.capacity,
+      endQuantity: quantity,
+      odometer: activeAsset.odometer,
+      receiptImage: activeAsset.receiptImage,
+      subjectType: activeAsset.subjectType ?? selectedDu,
+    );
 
 
   // Assign a new list reference for images
@@ -190,7 +199,7 @@ class RoutinesProvider extends ChangeNotifier {
     routines[index].endQuantity += quantity;
     routines[index].selectedDu = selectedDu;
 
-    debugPrint('ASSET REPORT ADDED : $asset');
+    debugPrint('ASSET REPORT ADDED : $newAsset');
     notifyListeners();
 
     return Result.success;
@@ -248,23 +257,32 @@ class RoutinesProvider extends ChangeNotifier {
     // }
 
 
-  Asset newAsset = Asset(
-    id: generateYYYYMMDDHHMMSSUniqueId(),
-    name: asset!.name, // Force unwrap (will throw an error if null)
-    type: asset!.type,
-    qrCode: asset!.qrCode,
-    quantity: asset!.quantity,
-    capacity: asset!.capacity,
-    endQuantity: quantity,
-    odometer: asset!.odometer,
-    receiptImage: asset!.receiptImage,
-    subjectType: asset!.subjectType
-  );
+    final Asset activeAsset = asset ?? Asset(
+      id: null,
+      name: 'NA',
+      type: 'NA',
+      qrCode: 'NA',
+      quantity: 0,
+      subjectType: selectedDu,
+    );
+
+    Asset newAsset = Asset(
+      id: activeAsset.id ?? generateYYYYMMDDHHMMSSUniqueId(),
+      name: activeAsset.name,
+      type: activeAsset.type,
+      qrCode: activeAsset.qrCode,
+      quantity: activeAsset.quantity,
+      capacity: activeAsset.capacity,
+      endQuantity: quantity,
+      odometer: activeAsset.odometer,
+      receiptImage: activeAsset.receiptImage,
+      subjectType: activeAsset.subjectType ?? selectedDu,
+    );
     // Update the routine's end quantity
     routines[index].endQuantity += quantity;
     routines[index].selectedDu = selectedDu;
 
-    debugPrint('ASSET REPORT ADDED : $asset');
+    debugPrint('ASSET REPORT ADDED : $newAsset');
     notifyListeners();
 
     return Result.success;
