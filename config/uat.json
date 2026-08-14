@@ -1,0 +1,5 @@
+{
+  "APP_ENV": "uat",
+  "MAIN_URL": "https://uat.anytimediesel.com",
+  "DU_URL": "http://192.168.202.155:8001"
+}

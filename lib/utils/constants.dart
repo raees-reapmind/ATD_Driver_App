@@ -1,23 +1,14 @@
-//const mainUrl = 'http://13.127.149.69'; // uat
-//const mainUrl = 'http://65.0.125.193'; // live
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// const mainUrl = 'https://uat.anytimediesel.com'; // took from postman
-const duUrl = 'http://192.168.202.155:8001';
-//const mainUrl = 'http://3.110.218.28'; // new live
-// const mainUrl = 'https://oms.anytimediesel.com';// Prod Url
-const mainUrl = 'https://uat.anytimediesel.com';// uat Url
+const String appEnv = String.fromEnvironment('APP_ENV', defaultValue: 'uat');
+const String mainUrl = String.fromEnvironment('MAIN_URL', defaultValue: 'https://uat.anytimediesel.com');
+const String duUrl = String.fromEnvironment('DU_URL', defaultValue: 'http://192.168.202.155:8001');
+
+
+
 const getOtpUrl = '$mainUrl/api/driver/login';
-// const mainUrl = 'https://phpstack-906681-5029380.cloudwaysapps.com';// Dev Url
-
-// build test
- 
-// const mainUrl = 'https://phpstack-906681-5115782.cloudwaysapps.com'; // dev url CODE MERGE
-
-//  code merge - consumer app 
-
-
 const putOtpUrl = '$mainUrl/api/otp';
 const getVehicleChecksUrl = '$mainUrl/api/app/vehicle-checklists';
 const postVehicleChecksUrl = '$mainUrl/api/app/vehicle-checklists';
